@@ -1,0 +1,19 @@
+﻿# Ignore build output
+bin/
+obj/
+
+# Ignore user-specific and system files
+.vs/
+*.user
+*.suo
+
+# Ignore configuration
+appsettings.*.json
+
+# Ignore Rider/VS Code
+.idea/
+.vscode/
+
+# Ignore MacOS / Windows metadata
+.DS_Store
+Thumbs.db
