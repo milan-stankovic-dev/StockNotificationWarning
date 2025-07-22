@@ -17,3 +17,5 @@ appsettings.*.json
 # Ignore MacOS / Windows metadata
 .DS_Store
 Thumbs.db
+
+.env
