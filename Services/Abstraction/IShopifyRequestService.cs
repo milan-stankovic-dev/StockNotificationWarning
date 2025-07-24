@@ -11,7 +11,6 @@ namespace StockNotificationWarning.Services.Abstraction
         Task ActivateAllAsync(string shop, string accessString);
         string BuildAuthorizationUrl(string shop);
         Task<string> AcquireTokenAsync(string shop, string code);
-        Task<ListResult<Product>> GetProductsAsync(string shop, string accessToken);
-        Task<ListResult<Product>> GetProductsStatusAsync(string status, string shop, string accessToken);
+        Task RegisterScriptTagAsync(string shop, string token);
     }
 }

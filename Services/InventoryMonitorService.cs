@@ -1,19 +1,20 @@
 ﻿using ShopifySharp;
 using ShopifySharp.Filters;
 using ShopifySharp.Lists;
+using StockNotificationWarning.Dto;
 using StockNotificationWarning.Services.Abstraction;
 
 namespace StockNotificationWarning.Services
 {
-    public class InventoryMonitorBackgroundService(
+    public class InventoryMonitorService(
         IServiceProvider services,
-        ILogger<InventoryMonitorBackgroundService> logger,
+        ILogger<InventoryMonitorService> logger,
         IServiceProvider serviceProvider,
-        IToastNotificationService notificationService) : BackgroundService
+        IToastNotificationService notificationService) : IInventoryMonitorService
     {
         readonly IToastNotificationService _notificationService = notificationService;
         readonly IServiceProvider _services = services;
-        readonly ILogger<InventoryMonitorBackgroundService> _logger = logger;
+        readonly ILogger<InventoryMonitorService> _logger = logger;
         readonly IServiceProvider _serviceProvider = serviceProvider;
 
         async Task<string?> GetProductTitleFromInvItemIdGraphQL(long invItemId)
@@ -84,8 +85,11 @@ namespace StockNotificationWarning.Services
             public string? Title { get; set; }
         }
 
-        async Task SetUpWarningMessages(ListResult<ShopifySharp.InventoryLevel> levels)
+        async Task<IEnumerable<UnderstockedProductDto>> FormDtoCollection(ListResult<InventoryLevel> levels)
         {
+            var levelsCount = levels.Items.Count();
+            var result = new List<UnderstockedProductDto>(levelsCount);
+
             foreach (var level in levels.Items)
             {
                 if (level.Available < 10)
@@ -100,12 +104,22 @@ namespace StockNotificationWarning.Services
 
                     string productName = title;
 
-                    string warningMessage = $"Low stock found for item: {productName}. Stock:" +
-                        $"{level.Available}";
-                    _logger.LogInformation($"PRODUCT FOUND WITH LOWER STOCK: {productName} = {level.Available}");
-                    _notificationService.AddToast(warningMessage);
+                    //string warningMessage = $"Low stock found for item: {productName}. Stock:" +
+                    //$"{level.Available}";
+                    //_logger.LogInformation($"PRODUCT FOUND WITH LOWER STOCK: {productName} = {level.Available}");
+                    //_notificationService.AddToast(warningMessage);
+
+                    var dto = new UnderstockedProductDto
+                    {
+                        ProductName = productName,
+                        Stock = level.Available
+                    };
+
+                    result.Add(dto);
                 }
             }
+
+            return [.. result];
         }
 
         async Task<List<long>> GetLocationIds(string shop, string token)
@@ -115,7 +129,7 @@ namespace StockNotificationWarning.Services
             return [.. locations.Items.Select(loc => loc!.Id!.Value)];
         }
 
-        async Task CheckInventory()
+        public async Task<IEnumerable<UnderstockedProductDto>> FindUnderstockedProducts()
         {
             using var scope = _serviceProvider.CreateScope();
             var metadataProvider = scope.ServiceProvider
@@ -131,7 +145,7 @@ namespace StockNotificationWarning.Services
                 //cekamo...
 
                 _logger.LogWarning("Shop or token did not get initialized. Waiting before retry...");
-                return;
+                return [];
             }
 
             var inventoryService = new InventoryLevelService(shop, token);
@@ -141,7 +155,7 @@ namespace StockNotificationWarning.Services
             if (locationIds is null || locationIds.Count == 0)
             {
                 _logger.LogWarning("No location IDs found. Cannot fetch inv levels");
-                return;
+                return [];
             }
 
             var filter = new InventoryLevelListFilter
@@ -152,28 +166,28 @@ namespace StockNotificationWarning.Services
 
             var inventoryLevels = await inventoryService.ListAsync(filter);
             _notificationService.ClearWarnings();
-            await SetUpWarningMessages(inventoryLevels);
+            return await FormDtoCollection(inventoryLevels);
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                using var scope = _services.CreateScope();
-                var cronConfigService = scope.ServiceProvider.GetService<ICronConfigProvider>()!;
-                int cronMinuteDelay = cronConfigService.Provide();
+        //protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        //{
+        //    while (!stoppingToken.IsCancellationRequested)
+        //    {
+        //        using var scope = _services.CreateScope();
+        //        var cronConfigService = scope.ServiceProvider.GetService<ICronConfigProvider>()!;
+        //        int cronMinuteDelay = cronConfigService.Provide();
 
-                try
-                {
-                    await CheckInventory();
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Error during inventory monitoring.");
-                }
+        //        try
+        //        {
+        //            await CheckInventory();
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            _logger.LogError(e, "Error during inventory monitoring.");
+        //        }
 
-                await Task.Delay(TimeSpan.FromMinutes(cronMinuteDelay), stoppingToken);
-            }
-        }
+        //        await Task.Delay(TimeSpan.FromMinutes(cronMinuteDelay), stoppingToken);
+        //    }
+        //}
     }
 }

@@ -11,7 +11,7 @@ DotNetEnv.Env.Load();
 builder.Services.AddRazorPages();
 builder.Services
     .AddScoped<ICronConfigProvider, CronConfigProvider>();
-builder.Services.AddHostedService<InventoryMonitorBackgroundService>();
+builder.Services.AddScoped<IInventoryMonitorService, InventoryMonitorService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IMetadataProvider, MetadataProvider>();
 builder.Services.AddSingleton<IToastNotificationService, ToastNotificationService>();
