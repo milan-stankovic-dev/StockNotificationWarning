@@ -8,7 +8,7 @@
     }
 
     try {
-        const res = await fetch(`https://stocknotificationwarning.onrender.com/api/inventory-check`);
+        const res = await fetch(`https://stocknotificationwarning.onrender.com/api/inventorycheck`);
 
         if (!res.ok) {
             console.error(`Inventory check failed: ${res.status} ${res.statusText}`);
