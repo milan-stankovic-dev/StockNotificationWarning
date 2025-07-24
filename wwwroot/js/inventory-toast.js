@@ -2,21 +2,32 @@
 
 (async () => {
     const handle = window.location.pathname.split("/products")[1];
-    if (!handle) { return; }
+    if (!handle) {
+        console.log("Not a product page, skipping inventory check.");
+        return;
+    }
 
     try {
-
         const res = await fetch(`https://stocknotificationwarning.onrender.com/api/inventory-check`);
-        const data = res.json();
+
+        if (!res.ok) {
+            console.error(`Inventory check failed: ${res.status} ${res.statusText}`);
+            return;
+        }
+
+        const data = await res.json();
+
+        if (!Array.isArray(data)) {
+            console.error("Unexpected data format:", data);
+            return;
+        }
 
         data.forEach(product => {
             const msg = `⚠️ Low stock for "${product.ProductName}" — only ${product.Stock} left!`;
-            Toast.failure(msg);
+            Toast.failure(msg); 
         });
 
-        if (data) {
-            console.log("Data fetched successfully!");
-        }
+        console.log("Data fetched and processed successfully.");
 
     } catch (err) {
         console.error("Inventory fetch failed", err);
