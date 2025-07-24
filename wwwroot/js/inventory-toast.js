@@ -1,5 +1,5 @@
 ﻿console.log("loaded inventory-toast.js");
-debugger;
+
 (async () => {
     const handle = window.location.pathname.split("/products")[1];
     if (!handle) { return; }
