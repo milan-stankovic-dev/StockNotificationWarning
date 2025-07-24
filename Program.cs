@@ -25,6 +25,16 @@ builder.Services.Configure<CronConfig>(
 builder.Services.Configure<ShopifyConfig>(
     builder.Configuration.GetSection("Shopify"));
 
+builder.Services.AddCors(opts =>
+{
+    opts.AddPolicy("ShopifyCorsPolicy", policy =>
+    {
+        policy.WithOrigins("https://previous-stare.myshopify.com")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
 builder.Configuration.AddEnvironmentVariables();
 
 var app = builder.Build();
