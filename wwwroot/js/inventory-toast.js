@@ -21,4 +21,4 @@
     } catch (err) {
         console.error("Inventory fetch failed", err.error);
     }
-})
+})();
