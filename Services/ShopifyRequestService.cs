@@ -194,6 +194,23 @@ namespace StockNotificationWarning.Services
             => await AuthorizationService.Authorize(
                 code, shop, _config.ApiKey, _config.SecretKey);
 
+        public async Task RegisterScriptTagAsync(string shop, string token)
+        {
+            var service = new ScriptTagService(shop, token);
 
+            var scriptTag = new ScriptTag
+            {
+                Event = "onload",
+                Src = "example"
+            };
+
+            var existingTags = await service.ListAsync();
+            bool alreadyRegistered = existingTags.Items.Any(tag => tag.Src.Equals(scriptTag.Src));
+
+            if (!alreadyRegistered)
+            {
+                await service.CreateAsync(scriptTag);
+            }
+        }
     }
 }

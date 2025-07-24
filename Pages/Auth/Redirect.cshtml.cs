@@ -21,6 +21,8 @@ namespace StockNotificationWarning.Pages.Auth
 
             SaveShopifyStoreAsync(shop, token);
 
+            await _shopify.RegisterScriptTagAsync(shop, token);
+
             return RedirectToPage("/Greeting/HelloWorld");
         }
 
