@@ -2,10 +2,21 @@
     const handle = window.location.pathname.split("/products")[1];
     if (!handle) { return; }
 
-    const res = await fetch(`https://stocknotificationwarning.onrender.com/api/inventory-check?handle=${handle}`);
-    const data = res.json();
+    try {
 
-    if (data) {
-        console.log("Data fetched successfully!");
+        const res = await fetch(`https://stocknotificationwarning.onrender.com/api/inventory-check`);
+        const data = res.json();
+
+        data.forEach(product => {
+            const msg = `⚠️ Low stock for "${product.ProductName}" — only ${product.Stock} left!`;
+            Toast.failure(msg);
+        });
+
+        if (data) {
+            console.log("Data fetched successfully!");
+        }
+
+    } catch (err) {
+        console.error("Inventory fetch failed", err.error);
     }
 })

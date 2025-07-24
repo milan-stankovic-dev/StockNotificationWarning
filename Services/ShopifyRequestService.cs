@@ -201,7 +201,7 @@ namespace StockNotificationWarning.Services
             var scriptTag = new ScriptTag
             {
                 Event = "onload",
-                Src = "example"
+                Src = "https://stocknotificationwarning.onrender.com/js/inventory-toast.js"
             };
 
             var existingTags = await service.ListAsync();

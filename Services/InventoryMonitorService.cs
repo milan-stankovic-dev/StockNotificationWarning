@@ -6,15 +6,15 @@ using StockNotificationWarning.Services.Abstraction;
 
 namespace StockNotificationWarning.Services
 {
-    public class InventoryMonitorBackgroundService(
+    public class InventoryMonitorService(
         IServiceProvider services,
-        ILogger<InventoryMonitorBackgroundService> logger,
+        ILogger<InventoryMonitorService> logger,
         IServiceProvider serviceProvider,
-        IToastNotificationService notificationService) 
+        IToastNotificationService notificationService) : IInventoryMonitorService
     {
         readonly IToastNotificationService _notificationService = notificationService;
         readonly IServiceProvider _services = services;
-        readonly ILogger<InventoryMonitorBackgroundService> _logger = logger;
+        readonly ILogger<InventoryMonitorService> _logger = logger;
         readonly IServiceProvider _serviceProvider = serviceProvider;
 
         async Task<string?> GetProductTitleFromInvItemIdGraphQL(long invItemId)
