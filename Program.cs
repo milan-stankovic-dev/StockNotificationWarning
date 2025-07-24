@@ -39,6 +39,8 @@ builder.Configuration.AddEnvironmentVariables();
 
 var app = builder.Build();
 
+app.UseCors("ShopifyCorsPolicy");
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -51,6 +53,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+
 
 app.UseAuthorization();
 

@@ -19,6 +19,6 @@
         }
 
     } catch (err) {
-        console.error("Inventory fetch failed", err.error);
+        console.error("Inventory fetch failed", err);
     }
 })();
