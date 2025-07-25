@@ -23,7 +23,7 @@
         }
 
         data.forEach(product => {
-            const msg = `⚠️ Low stock for "${product.ProductName}" — only ${product.Stock} left!`;
+            const msg = `⚠️ Low stock for "${product.productName}" — only ${product.stock} left!`;
             Toast.failure(msg); 
         });
 
