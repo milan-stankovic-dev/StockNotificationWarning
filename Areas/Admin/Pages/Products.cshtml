@@ -1,0 +1,57 @@
+﻿@page
+@model StockNotificationWarning.Areas.Pages.ProductsModel
+@{
+    ViewData["Title"] = Model.Understocked ? "Understocked Products" : "All Products";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (Model.Understocked)
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.UnderstockedProducts)
+            {
+                <tr>
+                    <td>@product.ProductName</td>
+                    <td>@product.Stock</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <table>
+        <thead>
+            <tr><th>Name</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.Products)
+            {
+                <tr>
+                    <td>@product.Title</td>
+                    <td>@Html.Raw(product.BodyHtml)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script>
+        Toastify({
+            text: "@(Model.Understocked ? "Understocked products loaded" : "All products loaded")",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "green",
+        }).showToast();
+    </script>
+}
