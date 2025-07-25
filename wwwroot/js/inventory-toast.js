@@ -1,51 +1,68 @@
-﻿console.log("loaded inventory-toast.js");
+﻿console.log("inventory-toast.js loading...");
 
-class ToastService {
-    constructor(options = {}) {
-        this.defaultOptions = {
-            duration: 3000,
-            close: true,
-            gravity: "top",
-            position: "right",
-            backgroundColor: "green",
-            stopOnFocus: true,
-            ...options
-        };
+(async () => {
+    if (typeof Toastify === "undefined") {
+        console.log("Toastify not found. Loading...");
+
+        await new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = "https://cdn.jsdelivr.net/npm/toastify-js";
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = "https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css";
+        document.head.appendChild(css);
+
+        console.log("Toastify loaded.");
     }
 
-    show(message, type = "success") {
-        if (!message) { return; }
+    class ToastService {
+        constructor(options = {}) {
+            this.defaultOptions = {
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                stopOnFocus: true,
+                ...options
+            };
+        }
 
-        const bgColor = this.getColor(type);
+        show(message, type = "success") {
+            if (!message) return;
 
-        Toastify({
-            text: message,
-            bgColor,
-            ...this.defaultOptions
-        }).showToast();
-    }
+            const bgColor = this.getColor(type);
 
-    success(message) {
-        this.show(message, "success");
-    }
+            Toastify({
+                text: message,
+                backgroundColor: bgColor,
+                ...this.defaultOptions
+            }).showToast();
+        }
 
-    failure(message) {
-        this.show(message, "failure");
-    }
+        success(message) {
+            this.show(message, "success");
+        }
 
-    getColor(type) {
-        switch (type) {
-            case "success": return "green";
-            case "failure": return "red";
-            default: return "grey";
+        failure(message) {
+            this.show(message, "failure");
+        }
+
+        getColor(type) {
+            switch (type) {
+                case "success": return "green";
+                case "failure": return "red";
+                default: return "gray";
+            }
         }
     }
 
-}
+    window.Toast = new ToastService();
 
-window.Toast = new ToastService();
-
-(async () => {
     const handle = window.location.pathname.split("/products")[1];
     if (!handle) {
         console.log("Not a product page, skipping inventory check.");
@@ -54,14 +71,12 @@ window.Toast = new ToastService();
 
     try {
         const res = await fetch(`https://stocknotificationwarning.onrender.com/api/inventorycheck`);
-
         if (!res.ok) {
             console.error(`Inventory check failed: ${res.status} ${res.statusText}`);
             return;
         }
 
         const data = await res.json();
-
         if (!Array.isArray(data)) {
             console.error("Unexpected data format:", data);
             return;
@@ -69,11 +84,10 @@ window.Toast = new ToastService();
 
         data.forEach(product => {
             const msg = `⚠️ Low stock for "${product.productName}" — only ${product.stock} left!`;
-            Toast.failure(msg); 
+            Toast.failure(msg);
         });
 
-        console.log("Data fetched and processed successfully.");
-
+        console.log("Low stock check completed.");
     } catch (err) {
         console.error("Inventory fetch failed", err);
     }
