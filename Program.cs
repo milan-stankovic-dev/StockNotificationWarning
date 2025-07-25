@@ -18,6 +18,11 @@ builder.Services.AddSingleton<IToastNotificationService, ToastNotificationServic
 builder.Services.AddScoped<IShopifyRequestService, ShopifyRequestService>();
 builder.Services.AddScoped<IConfigDefaultsProvider, ConfigDefaultsProvider>();
 
+builder.Services.AddRazorPages().AddRazorPagesOptions(opts =>
+{
+    opts.Conventions.AddAreaPageRoute("Admin", "/Index", "admin");
+});
+
 builder.Services.Configure<ShopDefaults>(
     builder.Configuration.GetSection("Defaults"));
 builder.Services.Configure<CronConfig>(

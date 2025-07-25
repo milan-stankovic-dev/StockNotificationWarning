@@ -169,6 +169,22 @@ namespace StockNotificationWarning.Services
             return await FormDtoCollection(inventoryLevels);
         }
 
+        public async Task<IEnumerable<Product>> FindProducts()
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var metadataProvider = scope.ServiceProvider
+                                        .GetRequiredService<IMetadataProvider>();
+
+            string? shop = (await metadataProvider.Provide()).GetValueOrDefault("shopName");
+            string? token = (await metadataProvider.Provide()).GetValueOrDefault("accessToken");
+
+            var productService = new ProductService(shop, token);
+
+            var products = await productService.ListAsync();
+
+            return products.Items;
+        }
+
         //protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         //{
         //    while (!stoppingToken.IsCancellationRequested)
