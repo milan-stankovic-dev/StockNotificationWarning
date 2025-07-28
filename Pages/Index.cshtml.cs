@@ -15,7 +15,7 @@ namespace StockNotificationWarning.Pages
             string shop = _configProvider.Provide();
             string host = Request.Query["host"].ToString();
 
-            if(string.IsNullOrEmpty(shop))
+            if(string.IsNullOrEmpty(host))
             {
                 return Content("Host name is missing");
             }
