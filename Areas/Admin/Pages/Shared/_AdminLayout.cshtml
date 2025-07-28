@@ -83,7 +83,7 @@
             const app = createApp({
                 apiKey: "@apiKey",
                 shopOrigin: "@shop",
-                host: "@host",
+                host: new URLSearchParams(location.search).get("host"),
                 forceRedirect: true
             });
 
