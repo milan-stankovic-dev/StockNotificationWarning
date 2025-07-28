@@ -6,10 +6,8 @@ namespace StockNotificationWarning.Pages.Greeting
 {
     public class HelloWorldModel : PageModel
     {
-        public IActionResult OnGetAsync()
+        public IActionResult OnGetAsync(string host = "")
         {
-            var host = Request.Query["host"].ToString();
-
             if(string.IsNullOrEmpty(host))
             {
                 return Content("Could not find host");

@@ -5,6 +5,7 @@
 @{
     var shop = ShopifySessionStore.ShopName ?? "N/A";
     var apiKey = ShopifyConfig.CurrentValue.ApiKey;
+    var host = ShopifySessionStore.Host;
 }
 
 <!DOCTYPE html>
@@ -78,7 +79,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             const AppBridge = window["app-bridge"];
             const createApp = AppBridge.default;
-            const host = new URLSearchParams(location.search).get("host");
+            // const host = new URLSearchParams(location.search).get("host");
 
             if(window.top === window.self || !host) {
                 const shop = @shop;
@@ -89,7 +90,7 @@
             const app = createApp({
                 apiKey: "@apiKey",
                 shopOrigin: "@shop",
-                host,
+                host: "@host",
                 forceRedirect: true
             });
 
