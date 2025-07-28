@@ -5,7 +5,7 @@
 @{
     var shop = ShopifySessionStore.ShopName ?? "N/A";
     var apiKey = ShopifyConfig.CurrentValue.ApiKey;
-    var host = Context.Request.Query["host"].ToString();
+    // var host = Context.Request.Query["host"].ToString();
 }
 
 <!DOCTYPE html>
@@ -79,11 +79,16 @@
         document.addEventListener("DOMContentLoaded", function () {
             const AppBridge = window["app-bridge"];
             const createApp = AppBridge.default;
+            const host = new URLSearchParams(location.search).get("host");
+
+            if(!host) {
+                window.top.location.href=`/auth/init?=shop=@shop`;
+            }
 
             const app = createApp({
                 apiKey: "@apiKey",
                 shopOrigin: "@shop",
-                host: new URLSearchParams(location.search).get("host"),
+                host,
                 forceRedirect: true
             });
 
