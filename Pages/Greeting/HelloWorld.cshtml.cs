@@ -6,16 +6,9 @@ namespace StockNotificationWarning.Pages.Greeting
 {
     public class HelloWorldModel : PageModel
     {
-        public IActionResult OnGetAsync(string host = "")
+        public void OnGet()
         {
-            if(string.IsNullOrEmpty(host))
-            {
-                return Content("Could not find host");
-                
-            }
-            ShopifySessionStore.Host = host;
-
-            return Page();
+            
         }
     }
 }

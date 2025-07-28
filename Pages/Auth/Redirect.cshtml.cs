@@ -10,9 +10,10 @@ namespace StockNotificationWarning.Pages.Auth
     {
         readonly IMetadataProvider _metadataProvider = metadataProvider;
         readonly IShopifyRequestService _shopify = shopify;
-        public async Task<IActionResult> OnGetAsync(string code, string shop)
+        public async Task<IActionResult> OnGetAsync(string code, string shop, string host)
         {
             string? token = (await _metadataProvider.Provide())["accessToken"];
+            ShopifySessionStore.Host = host;
 
             if (string.IsNullOrEmpty(token) || "N/A".Equals(token))
             {
@@ -23,6 +24,8 @@ namespace StockNotificationWarning.Pages.Auth
 
             await _shopify.RegisterScriptTagAsync(shop, token);
 
+            //return RedirectToPage(
+            //    $"https://admin.shopify.com/store/{shop}/apps/stocknotificationwarning?host={host}");
             return RedirectToPage("/Greeting/HelloWorld");
         }
 

@@ -66,12 +66,10 @@
         <a href="/Admin/Products?Understocked=true&shop=@shop" class="nav-link">Products (Understocked)</a>
     </div>
 
-    <!-- Main content -->
     <div class="main">
         @RenderBody()
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
@@ -79,7 +77,6 @@
         document.addEventListener("DOMContentLoaded", function () {
             const AppBridge = window["app-bridge"];
             const createApp = AppBridge.default;
-            // const host = new URLSearchParams(location.search).get("host");
 
             if(window.top === window.self || !host) {
                 const shop = @shop;
