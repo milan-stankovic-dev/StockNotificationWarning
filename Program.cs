@@ -61,17 +61,23 @@ app.UseRouting();
 
 app.Use(async (context, next) =>
 {
-    var shop = context.Request.Query["shop"].ToString();
     var host = context.Request.Query["host"].ToString();
 
-    var allowedSources = new[]
-     {
+    var allowedOrigins = new List<string>
+    {
         "https://admin.shopify.com",
-        $"https://{shop}.myshopify.com",
-        $"https://{shop}",
-        "https://shopify.dev",
         "https://partners.shopify.com"
     };
+
+    if (!string.IsNullOrEmpty(host))
+    {
+        allowedOrigins.Add($"https://{host}");
+    }
+
+    var cspValue = $"frame-ancestors {string.Join(" ", allowedOrigins)}";
+    context.Response.Headers["Content-Security-Policy"] = cspValue;
+
+    context.Response.Headers.Remove("X-Frame-Options");
 
     await next();
 });
