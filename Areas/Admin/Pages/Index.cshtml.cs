@@ -5,8 +5,10 @@ namespace StockNotificationWarning.Areas.Pages
 {
     public class IndexModel : PageModel
     {
-        public void OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
+            var shop = Request.Query["shop"].ToString();
+            return Redirect($"/Admin/Index?shop={shop}");
         }
     }
 }

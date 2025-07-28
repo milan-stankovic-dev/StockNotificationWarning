@@ -5,6 +5,7 @@
 @{
     var shop = ShopifySessionStore.ShopName ?? "N/A";
     var apiKey = ShopifyConfig.CurrentValue.ApiKey;
+    var host = Context.Request.Query["host"].ToString();
 }
 
 <!DOCTYPE html>
@@ -81,7 +82,9 @@
 
             const app = createApp({
                 apiKey: "@apiKey",
-                shopOrigin: "@shop"
+                shopOrigin: "@shop",
+                host: "@host",
+                forceRedirect: true
             });
 
             const { TitleBar } = AppBridge.actions;
