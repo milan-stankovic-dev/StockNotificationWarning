@@ -59,7 +59,17 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.Use(async (context, next) =>
+{
+    var shop = context.Request.Query["shop"].ToString();
+    var shopifyDomain = string.IsNullOrEmpty(shop) ? "" : $"https://{shop}";
 
+    context.Response.Headers["Content-Security-Policy"] =
+        $"frame-ancestors https://admin.shopify.com https://{shop} https://{shopifyDomain} https://partners.shopify.com;";
+    context.Response.Headers["X-Frame-Options"] = "ALLOWALL";
+
+    await next();
+});
 
 app.UseAuthorization();
 
