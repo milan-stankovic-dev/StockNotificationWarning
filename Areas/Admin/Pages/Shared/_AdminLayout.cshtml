@@ -81,8 +81,10 @@
             const createApp = AppBridge.default;
             const host = new URLSearchParams(location.search).get("host");
 
-            if(!host) {
-                window.top.location.href=`/auth/init?=shop=@shop`;
+            if(window.top === window.self || !host) {
+                const shop = @shop;
+                window.location.href = `/auth/init?shop=${shop}`;
+                return;
             }
 
             const app = createApp({

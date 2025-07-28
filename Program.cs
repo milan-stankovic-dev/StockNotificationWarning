@@ -62,11 +62,16 @@ app.UseRouting();
 app.Use(async (context, next) =>
 {
     var shop = context.Request.Query["shop"].ToString();
-    var shopifyDomain = string.IsNullOrEmpty(shop) ? "" : $"https://{shop}";
+    var host = context.Request.Query["host"].ToString();
 
-    context.Response.Headers["Content-Security-Policy"] =
-        $"frame-ancestors https://admin.shopify.com https://{shop} https://{shopifyDomain} https://partners.shopify.com;";
-    context.Response.Headers["X-Frame-Options"] = "ALLOWALL";
+    var allowedSources = new[]
+     {
+        "https://admin.shopify.com",
+        $"https://{shop}.myshopify.com",
+        $"https://{shop}",
+        "https://shopify.dev",
+        "https://partners.shopify.com"
+    };
 
     await next();
 });
