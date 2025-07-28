@@ -13,13 +13,6 @@ namespace StockNotificationWarning.Pages
         public IActionResult OnGet()
         {
             string shop = _configProvider.Provide();
-            string host = Request.Query["host"].ToString();
-
-            if(string.IsNullOrEmpty(host))
-            {
-                return Content("Host name is missing");
-            }
-
             string authUrl = _shopifyService.BuildAuthorizationUrl(shop);
 
             return Redirect(authUrl);
