@@ -14,7 +14,6 @@
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - Admin</title>
 
-    <!-- Toastify CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
 
     <style>
@@ -58,13 +57,12 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
+    @* <div class="sidebar">
         <h2>Admin</h2>
         <a href="/Admin/Index" class="nav-link">Dashboard</a>
         <a href="/Admin/Products?shop=@shop" class="nav-link">Products (All)</a>
         <a href="/Admin/Products?Understocked=true&shop=@shop" class="nav-link">Products (Understocked)</a>
-    </div>
+    </div> *@
 
     <div class="main">
         @RenderBody()
@@ -78,21 +76,22 @@
             const AppBridge = window["app-bridge"];
             const createApp = AppBridge.default;
 
-            if(window.top === window.self || !host) {
-                const shop = @shop;
+            const shop = "@shop";
+            const host = "@host";
+
+            if (window.top === window.self || !host) {
                 window.location.href = `/auth/init?shop=${shop}`;
                 return;
             }
 
             const app = createApp({
                 apiKey: "@apiKey",
-                shopOrigin: "@shop",
-                host: "@host",
+                shopOrigin: shop,
+                host: host,
                 forceRedirect: true
             });
 
             const { TitleBar } = AppBridge.actions;
-
             TitleBar.create(app, { title: document.title });
         });
     </script>
