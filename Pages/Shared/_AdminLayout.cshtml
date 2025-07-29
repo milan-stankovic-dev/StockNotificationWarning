@@ -1,4 +1,4 @@
-﻿@using Microsoft.Extensions.Options
+﻿﻿@using Microsoft.Extensions.Options
 @using StockNotificationWarning.Config
 @using System.Text.Json
 @inject IOptionsMonitor<ShopifyConfig> ShopifyConfig
@@ -30,7 +30,7 @@
             background: #f9fafb;
         }
 
-        
+
         .main {
             flex: 1;
             padding: 2rem;
@@ -39,7 +39,6 @@
     </style>
 </head>
 <body>
-    @* Sidebar is commented out *@
 
     <div class="main">
         @RenderBody()
@@ -49,12 +48,13 @@
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <script>
-        document.getElementById('appbridge-script').addEventListener('load', function () {
+        document.addEventListener('DOMContentLoaded', function () {
             const AppBridge = window["app-bridge"];
             if (!AppBridge) {
                 console.error("Shopify App Bridge failed to load");
                 return;
             }
+
             const createApp = AppBridge.default;
 
             const shop = @Html.Raw(shopJson);
@@ -62,6 +62,7 @@
             const apiKey = @Html.Raw(apiKeyJson);
 
             if (window.top === window.self || !host) {
+                console.warn("Missing host or not in iframe, redirecting...");
                 window.top.location.href = `/index`;
                 return;
             }
@@ -74,7 +75,6 @@
                 apiKey: apiKey,
                 host: host,
                 shopOrigin: shop,
-                shop: shop,
                 forceRedirect: true
             });
 
