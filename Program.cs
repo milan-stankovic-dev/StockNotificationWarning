@@ -40,25 +40,27 @@ builder.Services.AddCors(opts =>
     });
 });
 
-builder.Services.AddSession(options =>
-{
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-});
-
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
     options.MinimumSameSitePolicy = SameSiteMode.None;
+});
+
+builder.Services.AddSession(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
+    options.Cookie.HttpOnly = true;
+    options.Cookie.Domain = "stocknotificationwarning.onrender.com";
 });
 
 builder.Configuration.AddEnvironmentVariables();
 
 var app = builder.Build();
 
-app.UseCors("ShopifyCorsPolicy");
+app.UseRouting();
 app.UseCookiePolicy();
 app.UseSession();
+app.UseCors("ShopifyCorsPolicy");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -71,28 +73,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
 
 app.Use(async (context, next) =>
 {
-    var host = context.Request.Query["host"].ToString();
-
-    var allowedOrigins = new List<string>
-    {
-        "https://admin.shopify.com",
-        "https://partners.shopify.com"
-    };
-
-    if (!string.IsNullOrEmpty(host))
-    {
-        allowedOrigins.Add($"https://{host}");
-    }
-
-    var cspValue = $"frame-ancestors {string.Join(" ", allowedOrigins)}";
-    context.Response.Headers["Content-Security-Policy"] = cspValue;
-
-    context.Response.Headers.Remove("X-Frame-Options");
-
+    context.Response.Headers.Add("Content-Security-Policy", "frame-ancestors https://admin.shopify.com https://*.myshopify.com;");
     await next();
 });
 

@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@shopify/app-bridge": "^3.7.10",
+    "@shopify/app-bridge-utils": "^3.5.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.8"
+  }
+}
