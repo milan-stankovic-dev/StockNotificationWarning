@@ -40,11 +40,25 @@ builder.Services.AddCors(opts =>
     });
 });
 
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
+
 builder.Configuration.AddEnvironmentVariables();
 
 var app = builder.Build();
 
 app.UseCors("ShopifyCorsPolicy");
+app.UseCookiePolicy();
+app.UseSession();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
