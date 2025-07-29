@@ -1,11 +1,17 @@
 ﻿@using Microsoft.Extensions.Options
 @using StockNotificationWarning.Config
+@using System.Text.Json
 @inject IOptionsMonitor<ShopifyConfig> ShopifyConfig
 
 @{
     var shop = ShopifySessionStore.ShopName ?? "N/A";
     var apiKey = ShopifyConfig.CurrentValue.ApiKey;
     var host = ShopifySessionStore.Host;
+
+
+    var shopJson = JsonSerializer.Serialize(shop);
+    var hostJson = JsonSerializer.Serialize(host);
+    var apiKeyJson = JsonSerializer.Serialize(apiKey);
 }
 
 <!DOCTYPE html>
@@ -74,19 +80,25 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const AppBridge = window["app-bridge"];
+            if (!AppBridge) {
+                console.error("Shopify App Bridge failed to load");
+                return;
+            }
             const createApp = AppBridge.default;
 
-            const shop = "@shop";
-            const host = "@host";
+            const shop = @Html.Raw(shopJson);
+            const host = @Html.Raw(hostJson);
+            const apiKey = @Html.Raw(apiKeyJson);
 
             if (window.top === window.self || !host) {
-                window.location.href = `/index`;
+                window.top.location.href = `/index`;
                 return;
             }
 
             const app = createApp({
-                apiKey: "@apiKey",
+                apiKey: apiKey,
                 host: host,
+                shop: shop,
                 forceRedirect: true
             });
 
