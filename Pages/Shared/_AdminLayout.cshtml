@@ -8,7 +8,6 @@
     var apiKey = ShopifyConfig.CurrentValue.ApiKey;
     var host = ShopifySessionStore.Host;
 
-
     var shopJson = JsonSerializer.Serialize(shop);
     var hostJson = JsonSerializer.Serialize(host);
     var apiKeyJson = JsonSerializer.Serialize(apiKey);
@@ -31,30 +30,7 @@
             background: #f9fafb;
         }
 
-        .sidebar {
-            width: 220px;
-            background: #f1f2f3;
-            padding: 1rem;
-            border-right: 1px solid #dfe3e8;
-        }
-
-            .sidebar h2 {
-                font-size: 1.25rem;
-                margin-bottom: 1rem;
-            }
-
-        .nav-link {
-            display: block;
-            margin: 0.5rem 0;
-            color: #212b36;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-            .nav-link:hover {
-                text-decoration: underline;
-            }
-
+        
         .main {
             flex: 1;
             padding: 2rem;
@@ -63,22 +39,17 @@
     </style>
 </head>
 <body>
-    @* <div class="sidebar">
-        <h2>Admin</h2>
-        <a href="/Admin/Index" class="nav-link">Dashboard</a>
-        <a href="/Admin/Products?shop=@shop" class="nav-link">Products (All)</a>
-        <a href="/Admin/Products?Understocked=true&shop=@shop" class="nav-link">Products (Understocked)</a>
-    </div> *@
+    @* Sidebar is commented out *@
 
     <div class="main">
         @RenderBody()
     </div>
 
-    <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
+    <script id="appbridge-script" src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById('appbridge-script').addEventListener('load', function () {
             const AppBridge = window["app-bridge"];
             if (!AppBridge) {
                 console.error("Shopify App Bridge failed to load");
