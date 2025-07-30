@@ -9,8 +9,9 @@ COPY . ./
 RUN apt-get update && apt-get install -y curl gnupg && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
-    npm install && \
-    npx esbuild wwwroot/js/main.js --bundle --format=esm --outfile=wwwroot/js/app-bridge-bundle.js
+    npm install --global esbuild && \
+esbuild wwwroot/js/main.js --bundle --format=esm --outfile=wwwroot/js/app-bridge-bundle.js
+
 
 # Restore and publish .NET
 RUN dotnet restore
