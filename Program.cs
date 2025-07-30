@@ -45,21 +45,11 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
-builder.Services.AddSession(options =>
-{
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
-    options.Cookie.HttpOnly = true;
-    options.Cookie.Domain = "stocknotificationwarning.onrender.com";
-});
-
 builder.Configuration.AddEnvironmentVariables();
 
 var app = builder.Build();
 
 app.UseRouting();
-app.UseCookiePolicy();
-app.UseSession();
 app.UseCors("ShopifyCorsPolicy");
 
 // Configure the HTTP request pipeline.

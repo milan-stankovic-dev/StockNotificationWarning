@@ -9795,10 +9795,9 @@ async function initApp(apiKey, host) {
     window.top.location.href = "/index";
     return;
   }
-  const app = (0, import_app_bridge.createApp)({ apiKey, host });
+  const app = (0, import_app_bridge.createApp)({ apiKey, host, forceRedirect: true });
   try {
     const token = await (0, import_app_bridge_utils.getSessionToken)(app);
-    sessionStorage.setItem("sessionToken", token);
     console.log("Shopify session token:", token);
   } catch (e) {
     console.error("Error getting session token:", e);

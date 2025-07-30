@@ -19,3 +19,6 @@ appsettings.*.json
 Thumbs.db
 
 .env
+
+node_modules/
+node/

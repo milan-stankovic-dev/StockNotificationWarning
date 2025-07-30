@@ -9,11 +9,11 @@ export async function initApp(apiKey, host) {
         return;
     }
 
-    const app = createApp({ apiKey, host });
+    const app = createApp({ apiKey, host, forceRedirect: true });
 
     try {
         const token = await getSessionToken(app);
-        sessionStorage.setItem("sessionToken", token);
+        //sessionStorage.setItem("sessionToken", token);
         console.log("Shopify session token:", token);
     } catch (e) {
         console.error("Error getting session token:", e);

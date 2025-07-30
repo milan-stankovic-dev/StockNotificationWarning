@@ -10,44 +10,24 @@
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8" />
-    <title>@ViewData["Title"] - Admin</title>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
-
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            background: #f9fafb;
-        }
-
-        .main {
-            flex: 1;
-            padding: 2rem;
-            overflow-y: auto;
-        }
-    </style>
+    <title>@ViewData["Title"]</title>
 </head>
 <body data-api-key="@apiKey" data-host="@host">
-    <div class="main">
-        @RenderBody()
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    @RenderBody()
 
     <script type="module">
         import { initApp } from '/js/app-bridge-bundle.js';
-
-        const body = document.body;
-        const apiKey = body.dataset.apiKey;
-        const host = body.dataset.host;
+        const apiKey = document.body.dataset.apiKey;
+        const host = document.body.dataset.host;
 
         initApp(apiKey, host);
+
+        // window.appBridgeApp = app;
+
+        // const token = await app.getState().then(state => state.sessionToken);
+        // localStorage.setItem('sessionToken', token);
     </script>
 
     @RenderSection("Scripts", required: false)
