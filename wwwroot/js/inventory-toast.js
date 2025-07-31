@@ -63,8 +63,8 @@
 
     window.Toast = new ToastService();
 
-    const handle = window.location.pathname.split("/products")[1];
-    if (!handle) {
+    const isAdminPanel = window.location.href.include("admin");
+    if (!isAdminPanel) {
         console.log("Not a product page, skipping inventory check.");
         return;
     }
