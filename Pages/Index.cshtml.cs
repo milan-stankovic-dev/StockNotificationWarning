@@ -1,19 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using StockNotificationWarning.Services.Abstraction;
+using System.Threading.Tasks;
 
 namespace StockNotificationWarning.Pages
 {
     public class IndexModel(IShopifyRequestService shopifyService,
-       IConfigDefaultsProvider configProvider) : PageModel
+       IConfigDefaultsProvider configProvider,
+       IShopifyContextService contextService) : PageModel
     {
         readonly IShopifyRequestService _shopifyService = shopifyService;
         readonly IConfigDefaultsProvider _configProvider = configProvider;
+        readonly IShopifyContextService _contextService = contextService;
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
-            string shop = _configProvider.Provide();
+            string shop = _contextService.Shop ?? _configProvider.Provide();
             string authUrl = _shopifyService.BuildAuthorizationUrl(shop);
+            await _contextService.InitializeAsync(HttpContext, shop);
 
             return Redirect(authUrl);
         }

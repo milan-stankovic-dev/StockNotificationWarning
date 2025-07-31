@@ -1,16 +1,20 @@
 ﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using ShopifySharp;
 using StockNotificationWarning.Config;
 using StockNotificationWarning.Services.Abstraction;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 
 namespace StockNotificationWarning.Services
 {
-    public class ShopifyRequestService(IOptionsMonitor<ShopifyConfig> options) : IShopifyRequestService
+    public class ShopifyRequestService(IOptionsMonitor<ShopifyConfig> options,
+        IAccessTokenStore accessTokenStore) : IShopifyRequestService
     {
         private readonly ShopifyConfig _config = options.CurrentValue;
         readonly JsonSerializerOptions jsonOptions = new() { PropertyNameCaseInsensitive = true };
-        
+        readonly IAccessTokenStore _accessTokenStore = accessTokenStore;
+
         public async Task ActivateAsync(long productId, string shop, string accessToken)
         {
             var gql = new GraphService(shop, accessToken);
@@ -211,6 +215,35 @@ namespace StockNotificationWarning.Services
             {
                 await service.CreateAsync(scriptTag);
             }
+        }
+
+        public async Task<string> ValidateSessionTokenAndGetAccessToken(string sessionToken)
+        {
+            var handler = new JwtSecurityTokenHandler();
+
+            if(!handler.CanReadToken(sessionToken))
+            {
+                throw new ArgumentException("Invalid JWT format");
+            }
+
+            var jwt = handler.ReadJwtToken(sessionToken);
+            var dest = jwt.Payload["dest"].ToString();
+            
+            if (string.IsNullOrEmpty(dest))
+            {
+                throw new InvalidOperationException("Missing 'dest' claim in token.");
+            }
+
+            var shopDomain = dest.Replace("https://", "").TrimEnd('/');
+
+            var accessToken = _accessTokenStore.Get(shopDomain);
+
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                throw new InvalidOperationException($"No access token found for shop '{shopDomain}'");
+            }
+
+            return await Task.FromResult(accessToken);
         }
     }
 }

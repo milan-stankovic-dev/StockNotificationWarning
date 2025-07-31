@@ -21,11 +21,9 @@ namespace StockNotificationWarning.Services
         {
             using var scope = _services.CreateScope();
 
-            var metadataProvider = scope.ServiceProvider.GetRequiredService<IMetadataProvider>();
-            var data = await metadataProvider.Provide();
-            string shop = data["shopName"];
-            string token = data["accessToken"];
-
+            var metadataProvider = scope.ServiceProvider.GetRequiredService<IShopifyContextService>();
+            var shop = metadataProvider.Shop;
+            var token = metadataProvider.AccessToken;
 
             if(shop is null || token is null || "N/A".Equals(shop) ||
                 "N/A".Equals(token))
@@ -133,10 +131,13 @@ namespace StockNotificationWarning.Services
         {
             using var scope = _serviceProvider.CreateScope();
             var metadataProvider = scope.ServiceProvider
-                                        .GetRequiredService<IMetadataProvider>();
+                                        .GetRequiredService<IShopifyContextService>();
 
-            string? shop = (await metadataProvider.Provide()).GetValueOrDefault("shopName");
-            string? token = (await metadataProvider.Provide()).GetValueOrDefault("accessToken");
+            //string? shop = (await metadataProvider.Provide()).GetValueOrDefault("shopName");
+            //string? token = (await metadataProvider.Provide()).GetValueOrDefault("accessToken");
+
+            var shop = metadataProvider.Shop;
+            var token = metadataProvider.AccessToken;
 
             if ("N/A".Equals(shop) || "N/A".Equals(token))
             {
@@ -173,10 +174,13 @@ namespace StockNotificationWarning.Services
         {
             using var scope = _serviceProvider.CreateScope();
             var metadataProvider = scope.ServiceProvider
-                                        .GetRequiredService<IMetadataProvider>();
+                                        .GetRequiredService<IShopifyContextService>();
 
-            string? shop = (await metadataProvider.Provide()).GetValueOrDefault("shopName");
-            string? token = (await metadataProvider.Provide()).GetValueOrDefault("accessToken");
+            //string? shop = (await metadataProvider.Provide()).GetValueOrDefault("shopName");
+            //string? token = (await metadataProvider.Provide()).GetValueOrDefault("accessToken");
+
+            var shop = metadataProvider.Shop;
+            var token = metadataProvider.AccessToken;
 
             var productService = new ProductService(shop, token);
 
@@ -184,26 +188,5 @@ namespace StockNotificationWarning.Services
 
             return products.Items;
         }
-
-        //protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        //{
-        //    while (!stoppingToken.IsCancellationRequested)
-        //    {
-        //        using var scope = _services.CreateScope();
-        //        var cronConfigService = scope.ServiceProvider.GetService<ICronConfigProvider>()!;
-        //        int cronMinuteDelay = cronConfigService.Provide();
-
-        //        try
-        //        {
-        //            await CheckInventory();
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            _logger.LogError(e, "Error during inventory monitoring.");
-        //        }
-
-        //        await Task.Delay(TimeSpan.FromMinutes(cronMinuteDelay), stoppingToken);
-        //    }
-        //}
     }
 }

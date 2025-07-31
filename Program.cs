@@ -13,10 +13,11 @@ builder.Services
     .AddScoped<ICronConfigProvider, CronConfigProvider>();
 builder.Services.AddScoped<IInventoryMonitorService, InventoryMonitorService>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IMetadataProvider, MetadataProvider>();
 builder.Services.AddSingleton<IToastNotificationService, ToastNotificationService>();
 builder.Services.AddScoped<IShopifyRequestService, ShopifyRequestService>();
 builder.Services.AddScoped<IConfigDefaultsProvider, ConfigDefaultsProvider>();
+builder.Services.AddScoped<IShopifyContextService, ShopifyContextService>();
+builder.Services.AddScoped<IAccessTokenStore, AccessTokenStore>();
 
 builder.Services.AddRazorPages().AddRazorPagesOptions(opts =>
 {

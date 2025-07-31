@@ -12,5 +12,6 @@ namespace StockNotificationWarning.Services.Abstraction
         string BuildAuthorizationUrl(string shop);
         Task<string> AcquireTokenAsync(string shop, string code);
         Task RegisterScriptTagAsync(string shop, string token);
+        Task<string> ValidateSessionTokenAndGetAccessToken(string sessionToken);
     }
 }
