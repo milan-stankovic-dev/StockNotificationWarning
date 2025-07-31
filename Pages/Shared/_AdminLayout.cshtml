@@ -58,11 +58,9 @@
         const apiKey = document.body.dataset.apiKey;
         const host = document.body.dataset.host;
 
-        initApp(apiKey, host);
+        const app = initApp(apiKey, host);
+        window.app = app;
 
-    </script>
-
-    <script>
         async function fetchUnderstocked() {
             try {
                 const sessionToken = await window.app.getSessionToken();
@@ -88,7 +86,7 @@
             }
         }
 
-        setInterval(fetchUnderstocked, 30000); 
+        setInterval(fetchUnderstocked, 30000);
     </script>
 
     @RenderSection("Scripts", required: false)
