@@ -139,7 +139,7 @@ namespace StockNotificationWarning.Services
             var shop = metadataProvider.Shop;
             var token = metadataProvider.AccessToken;
 
-            if ("N/A".Equals(shop) || "N/A".Equals(token))
+            if ( shop is null || token is null || "N/A".Equals(shop) || "N/A".Equals(token))
             {
                 //Necemo ovde da bacamo jer onda na samom pocetku puca aplikacija,
                 //eagerly pokusava da izvrsi servisnu metodu, a nije jos registrovan token u sistemu
@@ -187,6 +187,16 @@ namespace StockNotificationWarning.Services
             var products = await productService.ListAsync();
 
             return products.Items;
+        }
+
+        public async Task NotifyToastServiceOfUnderstocked()
+        {
+            var understockedProds = await FindUnderstockedProducts();
+
+            foreach(var prod in understockedProds)
+            {
+                _notificationService.AddToast("Found low stock for product " + prod.ProductName + ". Stock: " + prod.Stock);
+            }
         }
     }
 }

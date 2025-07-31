@@ -5,6 +5,7 @@
 @inject IOptionsMonitor<ShopifyConfig> ShopifyConfig
 @inject IShopifyContextService ShopifyContext
 @inject IToastNotificationService ToastService
+@inject IInventoryMonitorService MonitorService
 
 @{
     await ShopifyContext.InitializeAsync(Context);
@@ -12,6 +13,7 @@
     var shop = ShopifyContext.Shop ?? "N/A";
     var host = ShopifyContext.Host ?? "N/A";
 
+    await MonitorService.NotifyToastServiceOfUnderstocked();
     var inventoryWarnings = ToastService.GetAllToasts();
 }
 
