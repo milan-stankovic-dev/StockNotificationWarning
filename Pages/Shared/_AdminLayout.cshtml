@@ -64,7 +64,7 @@
 
             async function fetchUnderstocked() {
                 try {
-                    const sessionToken = await app.getSessionToken();
+                    const sessionToken = await getSessionToken();
                     const response = await fetch('/api/toast-warning', {
                         method: 'GET',
                         headers: {
