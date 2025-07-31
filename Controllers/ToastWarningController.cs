@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using StockNotificationWarning.Services.Abstraction;
 
-namespace StockNotificationWarning.Pages.Api
+namespace StockNotificationWarning.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

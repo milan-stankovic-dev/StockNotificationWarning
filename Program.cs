@@ -19,6 +19,8 @@ builder.Services.AddScoped<IConfigDefaultsProvider, ConfigDefaultsProvider>();
 builder.Services.AddScoped<IShopifyContextService, ShopifyContextService>();
 builder.Services.AddScoped<IAccessTokenStore, AccessTokenStore>();
 
+builder.Services.AddControllers();
+
 builder.Services.AddRazorPages().AddRazorPagesOptions(opts =>
 {
     opts.Conventions.AddAreaPageRoute("Admin", "/Index", "admin");
