@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy everything (including JS)
+# Copy everything (including package.json for JS deps)
 COPY . ./
 
 # Install Node.js & npm (required for esbuild)
@@ -10,8 +10,8 @@ RUN apt-get update && apt-get install -y curl gnupg && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     npm install --global esbuild && \
-esbuild wwwroot/js/app-bridge-init.js --bundle --format=esm --outfile=wwwroot/js/app-bridge-bundle.js
-
+    npm install && \
+    esbuild wwwroot/js/app-bridge-init.js --bundle --format=esm --outfile=wwwroot/js/app-bridge-bundle.js
 
 # Restore and publish .NET
 RUN dotnet restore
