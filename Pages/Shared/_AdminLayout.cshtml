@@ -4,21 +4,41 @@
 @using StockNotificationWarning.Services.Abstraction
 @inject IOptionsMonitor<ShopifyConfig> ShopifyConfig
 @inject IShopifyContextService ShopifyContext
+@inject IToastNotificationService ToastService
 
 @{
     await ShopifyContext.InitializeAsync(Context);
     var apiKey = ShopifyConfig.CurrentValue.ApiKey;
     var shop = ShopifyContext.Shop ?? "N/A";
     var host = ShopifyContext.Host ?? "N/A";
+
+    var inventoryWarnings = ToastService.GetAllToasts();
 }
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="~/js/toasts.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
 <body data-api-key="@apiKey" data-host="@host">
     @RenderBody()
+
+    <script>
+         $(function() {
+        @foreach(var warning in inventoryWarnings)
+        {
+            <text>Toast.failure(@Html.Raw(JsonSerializer.Serialize(warning)));</text>
+        }
+        });
+    </script>
 
     <script type="module">
         import { initApp } from '/js/app-bridge-bundle.js';
