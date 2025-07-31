@@ -240,8 +240,8 @@ namespace StockNotificationWarning.Services
 
             var shopDomain = dest.Replace("https://", "").TrimEnd('/');
 
+            _logger.LogInformation($"------SHOP DOMAIN {shopDomain}-------");
             var accessToken = _accessTokenStore.Get(shopDomain);
-
             _logger.LogInformation($"Access token {accessToken}");
 
             if (string.IsNullOrEmpty(accessToken))
