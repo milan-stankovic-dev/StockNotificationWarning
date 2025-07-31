@@ -17,7 +17,7 @@ builder.Services.AddSingleton<IToastNotificationService, ToastNotificationServic
 builder.Services.AddScoped<IShopifyRequestService, ShopifyRequestService>();
 builder.Services.AddScoped<IConfigDefaultsProvider, ConfigDefaultsProvider>();
 builder.Services.AddScoped<IShopifyContextService, ShopifyContextService>();
-builder.Services.AddScoped<IAccessTokenStore, AccessTokenStore>();
+builder.Services.AddSingleton<IAccessTokenStore, AccessTokenStore>();
 
 builder.Services.AddControllers();
 
