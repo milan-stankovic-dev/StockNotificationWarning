@@ -54,13 +54,41 @@
 
     <script type="module">
         import { initApp } from '/js/app-bridge-bundle.js';
-        // import { getSessionToken } from '/js/app-bridge-bundle.js'
 
         const apiKey = document.body.dataset.apiKey;
         const host = document.body.dataset.host;
 
         initApp(apiKey, host);
 
+    </script>
+
+    <script>
+        async function fetchUnderstocked() {
+            try {
+                const sessionToken = await window.app.getSessionToken();
+                const response = await fetch('/api/toast-warning', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionToken,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const warnings = await response.json();
+                    warnings.forEach(warning => {
+                        console.log("📦 Inventory warning:", warning);
+                        Toast.failure(warning);
+                    });
+                } else {
+                    console.error("❌ Fetch failed:", response.status);
+                }
+            } catch (err) {
+                console.error("🔥 Error fetching understocked:", err);
+            }
+        }
+
+        setInterval(fetchUnderstocked, 30000); 
     </script>
 
     @RenderSection("Scripts", required: false)
