@@ -55,38 +55,39 @@
     <script type="module">
         import { initApp } from '/js/app-bridge-bundle.js';
 
-        const apiKey = document.body.dataset.apiKey;
-        const host = document.body.dataset.host;
+        (async () => {
+            const apiKey = document.body.dataset.apiKey;
+            const host = document.body.dataset.host;
 
-        const app = initApp(apiKey, host);
-        window.app = app;
+            const app = await initApp(apiKey, host);
+            window.app = app;
 
-        async function fetchUnderstocked() {
-            try {
-                const sessionToken = await window.app.getSessionToken();
-                const response = await fetch('/api/toast-warning', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + sessionToken,
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    const warnings = await response.json();
-                    warnings.forEach(warning => {
-                        console.log("📦 Inventory warning:", warning);
-                        Toast.failure(warning);
+            async function fetchUnderstocked() {
+                try {
+                    const sessionToken = await app.getSessionToken();
+                    const response = await fetch('/api/toast-warning', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + sessionToken,
+                            'Accept': 'application/json'
+                        }
                     });
-                } else {
-                    console.error("❌ Fetch failed:", response.status);
-                }
-            } catch (err) {
-                console.error("🔥 Error fetching understocked:", err);
-            }
-        }
 
-        setInterval(fetchUnderstocked, 30000);
+                    if (response.ok) {
+                        const warnings = await response.json();
+                        warnings.forEach(warning => {
+                            console.log("📦 Inventory warning:", warning);
+                            Toast.failure(warning);
+                        });
+                    } else {
+                        console.error("❌ Fetch failed:", response.status);
+                    }
+                } catch (err) {
+                    console.error("🔥 Error fetching understocked:", err);
+                }
+            }
+            setInterval(fetchUnderstocked, 30000);
+        })();
     </script>
 
     @RenderSection("Scripts", required: false)
