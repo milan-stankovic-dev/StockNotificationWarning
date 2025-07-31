@@ -2,9 +2,11 @@
 
 namespace StockNotificationWarning.Services
 {
-    public class ShopifyContextService(IShopifyRequestService requestService) : IShopifyContextService
+    public class ShopifyContextService(IShopifyRequestService requestService,
+                            ILogger<ShopifyContextService> logger) : IShopifyContextService
     {
         readonly IShopifyRequestService _requestService = requestService;
+        readonly ILogger<ShopifyContextService> _logger = logger;
         public string? Shop { get; private set; }
 
         public string? Host { get; private set; }
@@ -19,6 +21,8 @@ namespace StockNotificationWarning.Services
             Host = host ?? context.Request.Query["host"];
 
             var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            _logger.LogInformation($"Shop: {Shop}, Host: {host}");
 
             if(!string.IsNullOrEmpty(token))
             {

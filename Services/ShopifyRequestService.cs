@@ -9,11 +9,13 @@ using System.Text.Json;
 namespace StockNotificationWarning.Services
 {
     public class ShopifyRequestService(IOptionsMonitor<ShopifyConfig> options,
-        IAccessTokenStore accessTokenStore) : IShopifyRequestService
+        IAccessTokenStore accessTokenStore,
+        ILogger<ShopifyRequestService> logger) : IShopifyRequestService
     {
         private readonly ShopifyConfig _config = options.CurrentValue;
         readonly JsonSerializerOptions jsonOptions = new() { PropertyNameCaseInsensitive = true };
         readonly IAccessTokenStore _accessTokenStore = accessTokenStore;
+        readonly ILogger<ShopifyRequestService> _logger = logger;
 
         public async Task ActivateAsync(long productId, string shop, string accessToken)
         {
@@ -221,6 +223,8 @@ namespace StockNotificationWarning.Services
         {
             var handler = new JwtSecurityTokenHandler();
 
+            _logger.LogInformation($"Token: {sessionToken}");
+
             if(!handler.CanReadToken(sessionToken))
             {
                 throw new ArgumentException("Invalid JWT format");
@@ -237,6 +241,8 @@ namespace StockNotificationWarning.Services
             var shopDomain = dest.Replace("https://", "").TrimEnd('/');
 
             var accessToken = _accessTokenStore.Get(shopDomain);
+
+            _logger.LogInformation($"Access token {accessToken}");
 
             if (string.IsNullOrEmpty(accessToken))
             {
