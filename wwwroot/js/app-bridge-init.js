@@ -1,5 +1,5 @@
 ﻿import { createApp } from '@shopify/app-bridge';
-import { getSessionToken } from '@shopify/app-bridge-utils';
+import { getSessionToken as getSessionTokenOrig } from '@shopify/app-bridge-utils';
 import { TitleBar } from '@shopify/app-bridge/actions';
 
 export async function initApp(apiKey, host) {
@@ -12,7 +12,7 @@ export async function initApp(apiKey, host) {
     const app = createApp({ apiKey, host, forceRedirect: true });
 
     try {
-        const token = await getSessionToken(app);
+        const token = await getSessionTokenOrig(app);
         //sessionStorage.setItem("sessionToken", token);
         console.log("Shopify session token:", token);
     } catch (e) {
@@ -22,4 +22,9 @@ export async function initApp(apiKey, host) {
     TitleBar.create(app, { title: document.title });
 
     return app;
+}
+
+
+export function getSessionToken(app) {
+    return getSessionTokenOrig(app);
 }
