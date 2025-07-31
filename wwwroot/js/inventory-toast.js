@@ -63,12 +63,6 @@
 
     window.Toast = new ToastService();
 
-    const isAdminPanel = window.location.href.include("admin");
-    if (!isAdminPanel) {
-        console.log("Not a product page, skipping inventory check.");
-        return;
-    }
-
     try {
         const res = await fetch(`https://stocknotificationwarning.onrender.com/api/inventorycheck`);
         if (!res.ok) {
