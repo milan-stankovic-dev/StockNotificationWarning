@@ -87,6 +87,9 @@
                     console.error("🔥 Error fetching understocked:", err);
                 }
             }
+
+            await fetchUnderstocked();
+
             setInterval(fetchUnderstocked, 30000);
         })();
     </script>
