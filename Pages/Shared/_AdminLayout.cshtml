@@ -29,7 +29,7 @@
 <body data-api-key="@apiKey">
     @RenderBody()
 
-    <script>
+    @* <script>
         $(function () {
 
             @if (inventoryWarnings == null)
@@ -46,7 +46,7 @@
                     <text>Toast.failure(@Html.Raw(JsonSerializer.Serialize(warning)));</text>
             }
         });
-    </script>
+    </script> *@
 
     <script type="module">
         import { initApp } from '/js/app-bridge-bundle.js';
@@ -66,6 +66,8 @@
             window.app = app;
 
             async function fetchUnderstocked() {
+                console.log("Understocked product CRON job ran!");
+
                 try {
                     const sessionToken = await getSessionToken(app);
                     const response = await fetch('/api/toastwarning', {
