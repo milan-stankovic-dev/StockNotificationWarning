@@ -7,11 +7,11 @@ namespace StockNotificationWarning.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class ToastWarningController(IInventoryMonitorService inventoryMonitor,
-                                        IShopifyContextService shopifyContextService,
+                                        IShopifyCredentialStore shopifyContextService,
                                         IToastNotificationService toastService) : ControllerBase
     {
         readonly IInventoryMonitorService _inventoryMonitor = inventoryMonitor;
-        readonly IShopifyContextService _shopifyContextService = shopifyContextService;
+        readonly IShopifyCredentialStore _shopifyContextService = shopifyContextService;
         readonly IToastNotificationService _toastService = toastService;
         
         [HttpGet]

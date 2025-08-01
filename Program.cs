@@ -16,8 +16,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IToastNotificationService, ToastNotificationService>();
 builder.Services.AddScoped<IShopifyRequestService, ShopifyRequestService>();
 builder.Services.AddScoped<IConfigDefaultsProvider, ConfigDefaultsProvider>();
-builder.Services.AddSingleton<IShopifyContextService, ShopifyContextService>();
-builder.Services.AddSingleton<IAccessTokenStore, AccessTokenStore>();
+builder.Services.AddSingleton<IShopifyCredentialStore, ShopifyCredentialStore>();
 
 builder.Services.AddControllers();
 

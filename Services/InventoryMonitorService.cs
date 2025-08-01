@@ -11,21 +11,17 @@ namespace StockNotificationWarning.Services
         ILogger<InventoryMonitorService> logger,
         IServiceProvider serviceProvider,
         IToastNotificationService notificationService,
-        IShopifyContextService contextService) : IInventoryMonitorService
+        IShopifyCredentialStore contextService) : IInventoryMonitorService
     {
         readonly IToastNotificationService _notificationService = notificationService;
         readonly IServiceProvider _services = services;
         readonly ILogger<InventoryMonitorService> _logger = logger;
         readonly IServiceProvider _serviceProvider = serviceProvider;
-        readonly IShopifyContextService _contextService = contextService;
+        readonly IShopifyCredentialStore _contextService = contextService;
 
         async Task<string?> GetProductTitleFromInvItemIdGraphQL(long invItemId)
         {
-            using var scope = _services.CreateScope();
-
-            var metadataProvider = scope.ServiceProvider.GetRequiredService<IShopifyContextService>();
-            var shop = metadataProvider.Shop;
-            var token = metadataProvider.AccessToken;
+            var (shop, token) = GetShopAndToken();
 
             if(shop is null || token is null || "N/A".Equals(shop) ||
                 "N/A".Equals(token))
@@ -131,15 +127,7 @@ namespace StockNotificationWarning.Services
 
         public async Task<IEnumerable<UnderstockedProductDto>> FindUnderstockedProducts()
         {
-            using var scope = _serviceProvider.CreateScope();
-            var metadataProvider = scope.ServiceProvider
-                                        .GetRequiredService<IShopifyContextService>();
-
-            //string? shop = (await metadataProvider.Provide()).GetValueOrDefault("shopName");
-            //string? token = (await metadataProvider.Provide()).GetValueOrDefault("accessToken");
-
-            var shop = metadataProvider.Shop;
-            var token = metadataProvider.AccessToken;
+            var (shop, token) = GetShopAndToken();
 
             if ( shop is null || token is null || "N/A".Equals(shop) || "N/A".Equals(token) ||
                 "".Equals(token) || "".Equals(shop))
@@ -174,18 +162,23 @@ namespace StockNotificationWarning.Services
             return await FormDtoCollection(inventoryLevels);
         }
 
-        public async Task<IEnumerable<Product>> FindProducts()
+        (string shop, string token) GetShopAndToken()
         {
             using var scope = _serviceProvider.CreateScope();
+            var configDefaultsProvider = scope.ServiceProvider.GetRequiredService<IConfigDefaultsProvider>();
+            var credentialStore = scope.ServiceProvider.GetRequiredService<IShopifyCredentialStore>();
 
-            //string? shop = (await metadataProvider.Provide()).GetValueOrDefault("shopName");
-            //string? token = (await metadataProvider.Provide()).GetValueOrDefault("accessToken");
+            var shop = configDefaultsProvider.Provide();
+            var token = credentialStore.Get(shop) ?? "N/A";
 
-            var shop = _contextService.Shop;
-            var token = _contextService.AccessToken;
+            return (shop, token);
+        }
+
+        public async Task<IEnumerable<Product>> FindProducts()
+        {
+            var (shop, token) = GetShopAndToken();
 
             var productService = new ProductService(shop, token);
-
             var products = await productService.ListAsync();
 
             return products.Items;

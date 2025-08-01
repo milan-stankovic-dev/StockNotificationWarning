@@ -10,11 +10,11 @@ namespace StockNotificationWarning.Services
 {
     public class ShopifyRequestService(IOptionsMonitor<ShopifyConfig> options,
         ILogger<ShopifyRequestService> logger,
-        IShopifyContextService shopifyContextService) : IShopifyRequestService
+        IShopifyCredentialStore shopifyContextService) : IShopifyRequestService
     {
         readonly ShopifyConfig _config = options.CurrentValue;
         readonly JsonSerializerOptions jsonOptions = new() { PropertyNameCaseInsensitive = true };
-        readonly IShopifyContextService _shopifyContextService = shopifyContextService;
+        readonly IShopifyCredentialStore _shopifyContextService = shopifyContextService;
 
         readonly ILogger<ShopifyRequestService> _logger = logger;
 
@@ -242,7 +242,7 @@ namespace StockNotificationWarning.Services
             var shopDomain = dest.Replace("https://", "").TrimEnd('/');
 
             _logger.LogInformation($"------SHOP DOMAIN {shopDomain}-------");
-            var accessToken = _shopifyContextService.AccessToken;
+            var accessToken = _shopifyContextService.Get(shopDomain);
             _logger.LogInformation($"Access token {accessToken}");
 
             if (string.IsNullOrEmpty(accessToken))

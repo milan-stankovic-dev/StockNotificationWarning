@@ -2,17 +2,13 @@
 @using StockNotificationWarning.Config
 @using System.Text.Json
 @using StockNotificationWarning.Services.Abstraction
-@inject IOptionsMonitor<ShopifyConfig> ShopifyConfig
-@inject IShopifyContextService ShopifyContext
+@inject IOptionsMonitor<ShopifyConfig> CredentialStore
+@inject IShopifyCredentialStore ShopifyContext
 @inject IToastNotificationService ToastService
 @inject IInventoryMonitorService MonitorService
 
 @{
-    // await ShopifyContext.InitializeAsync(Context);
-    var apiKey = ShopifyConfig.CurrentValue.ApiKey;
-    // var shop = ShopifyContext.Shop ?? "N/A";
-    var host = ShopifyContext.Host ?? "N/A";
-
+    var apiKey = CredentialStore.CurrentValue.ApiKey;
     await MonitorService.NotifyToastServiceOfUnderstocked();
     var inventoryWarnings = ToastService.GetAllToasts();
 }
@@ -30,7 +26,7 @@
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
-<body data-api-key="@apiKey" data-host="@host">
+<body data-api-key="@apiKey">
     @RenderBody()
 
     <script>
@@ -58,7 +54,13 @@
 
         (async () => {
             const apiKey = document.body.dataset.apiKey;
-            const host = document.body.dataset.host;
+            const urlParams = new URLSearchParams(window.location.search);
+            const host = urlParams.get('host');
+
+            if (!host) {
+                console.error("🚨 Missing 'host' query parameter — Shopify App Bridge will break");
+                return;
+            }
 
             const app = await initApp(apiKey, host);
             window.app = app;
