@@ -6,6 +6,6 @@
         string? Host { get; }
         string? AccessToken { get; }
 
-        Task InitializeAsync(HttpContext context, string? shop = null, string? host = null);
+        void InitializeAsync(HttpContext context, string? shop = null, string? host = null);
     }
 }

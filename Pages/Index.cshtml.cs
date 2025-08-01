@@ -13,11 +13,11 @@ namespace StockNotificationWarning.Pages
         readonly IConfigDefaultsProvider _configProvider = configProvider;
         readonly IShopifyContextService _contextService = contextService;
 
-        public async Task<IActionResult> OnGetAsync()
+        public IActionResult OnGet()
         {
             string shop = _contextService.Shop ?? _configProvider.Provide();
             string authUrl = _shopifyService.BuildAuthorizationUrl(shop);
-            await _contextService.InitializeAsync(HttpContext, shop);
+            _contextService.InitializeAsync(HttpContext, shop);
 
             return Redirect(authUrl);
         }

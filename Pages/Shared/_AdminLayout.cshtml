@@ -8,9 +8,9 @@
 @inject IInventoryMonitorService MonitorService
 
 @{
-    await ShopifyContext.InitializeAsync(Context);
+    // await ShopifyContext.InitializeAsync(Context);
     var apiKey = ShopifyConfig.CurrentValue.ApiKey;
-    var shop = ShopifyContext.Shop ?? "N/A";
+    // var shop = ShopifyContext.Shop ?? "N/A";
     var host = ShopifyContext.Host ?? "N/A";
 
     await MonitorService.NotifyToastServiceOfUnderstocked();

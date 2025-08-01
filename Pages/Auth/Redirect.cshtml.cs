@@ -14,7 +14,7 @@ namespace StockNotificationWarning.Pages.Auth
 
         public async Task<IActionResult> OnGetAsync(string code, string shop, string host)
         {
-            await _context.InitializeAsync(HttpContext, shop, host);
+            _context.InitializeAsync(HttpContext, shop, host);
 
             string? token = _context.AccessToken;
 
