@@ -17,7 +17,6 @@ namespace StockNotificationWarning.Pages
         {
             string shop = _contextService.Shop ?? _configProvider.Provide();
             string authUrl = _shopifyService.BuildAuthorizationUrl(shop);
-            _contextService.InitializeAsync(HttpContext, shop);
 
             return Redirect(authUrl);
         }
