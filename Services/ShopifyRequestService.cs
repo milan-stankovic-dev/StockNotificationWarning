@@ -9,7 +9,6 @@ using System.Text.Json;
 namespace StockNotificationWarning.Services
 {
     public class ShopifyRequestService(IOptionsMonitor<ShopifyConfig> options,
-        IAccessTokenStore accessTokenStore,
         ILogger<ShopifyRequestService> logger,
         IShopifyContextService shopifyContextService) : IShopifyRequestService
     {
