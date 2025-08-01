@@ -14,14 +14,14 @@ namespace StockNotificationWarning.Pages.Auth
 
         public async Task<IActionResult> OnGetAsync(string code, string shop, string host)
         {
-            _context.InitializeAsync(HttpContext, shop, host);
-
             string? token = _context.AccessToken;
 
             if (string.IsNullOrEmpty(token) || "N/A".Equals(token))
             {
                 token = await _shopify.AcquireTokenAsync(shop, code);
             }
+
+            _context.InitializeAsync(HttpContext, shop, host, token);
 
             await _shopify.RegisterScriptTagAsync(shop, token);
 

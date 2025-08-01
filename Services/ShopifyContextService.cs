@@ -13,12 +13,12 @@ namespace StockNotificationWarning.Services
 
         public void InitializeAsync(HttpContext context,
                                           string? shop = null,
-                                          string? host = null)
+                                          string? host = null,
+                                          string? token = null)
         {
             Shop = shop ?? context.Request.Query["shop"];
             Host = host ?? context.Request.Query["host"];
-
-            AccessToken = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            AccessToken = token ?? context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
             _logger.LogInformation("INIT ASYNC CALLED FOR SHOPIFY CONTEXT");
             _logger.LogInformation($"Shop: {Shop}, Host: {Host}, AccessToken: {AccessToken}");
