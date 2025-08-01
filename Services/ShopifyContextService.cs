@@ -2,8 +2,9 @@
 
 namespace StockNotificationWarning.Services
 {
-    public class ShopifyContextService : IShopifyContextService
+    public class ShopifyContextService(ILogger<ShopifyContextService> logger) : IShopifyContextService
     {
+        readonly ILogger<ShopifyContextService> _logger = logger;
         public string? Shop { get; private set; }
 
         public string? Host { get; private set; }
@@ -18,6 +19,9 @@ namespace StockNotificationWarning.Services
             Host = host ?? context.Request.Query["host"];
 
             AccessToken = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            _logger.LogInformation("INIT ASYNC CALLED FOR SHOPIFY CONTEXT");
+            _logger.LogInformation($"Shop: {Shop}, Host: {Host}, AccessToken: {AccessToken}");
         }
     }
 }
