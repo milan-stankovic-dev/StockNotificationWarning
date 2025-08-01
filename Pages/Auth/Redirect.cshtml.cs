@@ -5,10 +5,13 @@ using StockNotificationWarning.Services.Abstraction;
 namespace StockNotificationWarning.Pages.Auth
 {
     public class RedirectModel(IShopifyRequestService shopify,
-                               IShopifyContextService shopifyContext) : PageModel
+                               IShopifyContextService shopifyContext,
+                               IAccessTokenStore store) : PageModel
     {
         readonly IShopifyRequestService _shopify = shopify;
         readonly IShopifyContextService _context = shopifyContext;
+        readonly IAccessTokenStore _store = store;
+
         public async Task<IActionResult> OnGetAsync(string code, string shop, string host)
         {
             await _context.InitializeAsync(HttpContext, shop, host);

@@ -16,7 +16,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IToastNotificationService, ToastNotificationService>();
 builder.Services.AddScoped<IShopifyRequestService, ShopifyRequestService>();
 builder.Services.AddScoped<IConfigDefaultsProvider, ConfigDefaultsProvider>();
-builder.Services.AddScoped<IShopifyContextService, ShopifyContextService>();
+builder.Services.AddSingleton<IShopifyContextService, ShopifyContextService>();
 builder.Services.AddSingleton<IAccessTokenStore, AccessTokenStore>();
 
 builder.Services.AddControllers();
@@ -43,11 +43,6 @@ builder.Services.AddCors(opts =>
     });
 });
 
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    options.MinimumSameSitePolicy = SameSiteMode.None;
-});
-
 builder.Configuration.AddEnvironmentVariables();
 
 var app = builder.Build();
@@ -55,11 +50,9 @@ var app = builder.Build();
 app.UseRouting();
 app.UseCors("ShopifyCorsPolicy");
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

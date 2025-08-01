@@ -10,12 +10,14 @@ namespace StockNotificationWarning.Services
         IServiceProvider services,
         ILogger<InventoryMonitorService> logger,
         IServiceProvider serviceProvider,
-        IToastNotificationService notificationService) : IInventoryMonitorService
+        IToastNotificationService notificationService,
+        IShopifyContextService contextService) : IInventoryMonitorService
     {
         readonly IToastNotificationService _notificationService = notificationService;
         readonly IServiceProvider _services = services;
         readonly ILogger<InventoryMonitorService> _logger = logger;
         readonly IServiceProvider _serviceProvider = serviceProvider;
+        readonly IShopifyContextService _contextService = contextService;
 
         async Task<string?> GetProductTitleFromInvItemIdGraphQL(long invItemId)
         {
@@ -173,14 +175,12 @@ namespace StockNotificationWarning.Services
         public async Task<IEnumerable<Product>> FindProducts()
         {
             using var scope = _serviceProvider.CreateScope();
-            var metadataProvider = scope.ServiceProvider
-                                        .GetRequiredService<IShopifyContextService>();
 
             //string? shop = (await metadataProvider.Provide()).GetValueOrDefault("shopName");
             //string? token = (await metadataProvider.Provide()).GetValueOrDefault("accessToken");
 
-            var shop = metadataProvider.Shop;
-            var token = metadataProvider.AccessToken;
+            var shop = _contextService.Shop;
+            var token = _contextService.AccessToken;
 
             var productService = new ProductService(shop, token);
 

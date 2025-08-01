@@ -17,7 +17,7 @@ namespace StockNotificationWarning.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            await _shopifyContextService.InitializeAsync(HttpContext);
+            //await _shopifyContextService.InitializeAsync(HttpContext);
             await _inventoryMonitor.NotifyToastServiceOfUnderstocked();
             var toasts = _toastService.GetAllToasts();
 

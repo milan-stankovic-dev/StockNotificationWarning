@@ -10,11 +10,13 @@ namespace StockNotificationWarning.Services
 {
     public class ShopifyRequestService(IOptionsMonitor<ShopifyConfig> options,
         IAccessTokenStore accessTokenStore,
-        ILogger<ShopifyRequestService> logger) : IShopifyRequestService
+        ILogger<ShopifyRequestService> logger,
+        IShopifyContextService shopifyContextService) : IShopifyRequestService
     {
-        private readonly ShopifyConfig _config = options.CurrentValue;
+        readonly ShopifyConfig _config = options.CurrentValue;
         readonly JsonSerializerOptions jsonOptions = new() { PropertyNameCaseInsensitive = true };
-        readonly IAccessTokenStore _accessTokenStore = accessTokenStore;
+        readonly IShopifyContextService _shopifyContextService = shopifyContextService;
+
         readonly ILogger<ShopifyRequestService> _logger = logger;
 
         public async Task ActivateAsync(long productId, string shop, string accessToken)
@@ -241,7 +243,7 @@ namespace StockNotificationWarning.Services
             var shopDomain = dest.Replace("https://", "").TrimEnd('/');
 
             _logger.LogInformation($"------SHOP DOMAIN {shopDomain}-------");
-            var accessToken = _accessTokenStore.Get(shopDomain);
+            var accessToken = _shopifyContextService.AccessToken;
             _logger.LogInformation($"Access token {accessToken}");
 
             if (string.IsNullOrEmpty(accessToken))
