@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using StockNotificationWarning.Services;
 using StockNotificationWarning.Services.Abstraction;
 
 namespace StockNotificationWarning.Pages.Api

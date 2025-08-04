@@ -7,17 +7,15 @@ using StockNotificationWarning.Services.Abstraction;
 namespace StockNotificationWarning.Services
 {
     public class InventoryMonitorService(
-        IServiceProvider services,
         ILogger<InventoryMonitorService> logger,
         IServiceProvider serviceProvider,
-        IToastNotificationService notificationService,
-        IShopifyCredentialStore contextService) : IInventoryMonitorService
+        IToastNotificationService notificationService) : IInventoryMonitorService
     {
         readonly IToastNotificationService _notificationService = notificationService;
-        readonly IServiceProvider _services = services;
+        
         readonly ILogger<InventoryMonitorService> _logger = logger;
         readonly IServiceProvider _serviceProvider = serviceProvider;
-        readonly IShopifyCredentialStore _contextService = contextService;
+        
 
         async Task<string?> GetProductTitleFromInvItemIdGraphQL(long invItemId)
         {
@@ -99,11 +97,6 @@ namespace StockNotificationWarning.Services
                     }
 
                     string productName = title;
-
-                    //string warningMessage = $"Low stock found for item: {productName}. Stock:" +
-                    //$"{level.Available}";
-                    //_logger.LogInformation($"PRODUCT FOUND WITH LOWER STOCK: {productName} = {level.Available}");
-                    //_notificationService.AddToast(warningMessage);
 
                     var dto = new UnderstockedProductDto
                     {

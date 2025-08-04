@@ -1,7 +1,4 @@
-﻿using ShopifySharp;
-using ShopifySharp.Lists;
-
-namespace StockNotificationWarning.Services.Abstraction
+﻿namespace StockNotificationWarning.Services.Abstraction
 {
     public interface IShopifyRequestService
     {

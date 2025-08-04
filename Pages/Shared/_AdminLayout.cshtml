@@ -29,25 +29,6 @@
 <body data-api-key="@apiKey">
     @RenderBody()
 
-    @* <script>
-        $(function () {
-
-            @if (inventoryWarnings == null)
-            {
-                    <text>console.log("⚠️ inventoryWarnings is null");</text>
-            }
-            else if (!inventoryWarnings.Any())
-            {
-                    <text>console.log("ℹ️ inventoryWarnings is empty");</text>
-            }
-            @foreach (var warning in inventoryWarnings)
-            {
-                    <text>console.log("📦 Inventory warning:", @Html.Raw(JsonSerializer.Serialize(warning)));\n</text>
-                    <text>Toast.failure(@Html.Raw(JsonSerializer.Serialize(warning)));</text>
-            }
-        });
-    </script> *@
-
     <script type="module">
         import { initApp } from '/js/app-bridge-bundle.js';
         import { getSessionToken } from '/js/app-bridge-bundle.js';

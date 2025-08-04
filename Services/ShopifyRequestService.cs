@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using ShopifySharp;
 using StockNotificationWarning.Config;
 using StockNotificationWarning.Services.Abstraction;
@@ -241,9 +240,7 @@ namespace StockNotificationWarning.Services
 
             var shopDomain = dest.Replace("https://", "").TrimEnd('/');
 
-            _logger.LogInformation($"------SHOP DOMAIN {shopDomain}-------");
             var accessToken = _shopifyContextService.Get(shopDomain);
-            _logger.LogInformation($"Access token {accessToken}");
 
             if (string.IsNullOrEmpty(accessToken))
             {
