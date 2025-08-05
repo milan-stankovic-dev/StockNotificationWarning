@@ -27,3 +27,4 @@ namespace StockNotificationWarning.Pages.Auth
         }
     }
 }
+ 
