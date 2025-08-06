@@ -6,7 +6,7 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<table>
+<table class="table table-bordered table-striped table-sm">
     <thead>
         <tr>
             <th>Id</th>
@@ -21,7 +21,7 @@
             <tr>
                 <td>@customProduct?.Node?.Id?.Split('/')[4]</td>
                 <td>@customProduct?.Node?.Title</td>
-                <td>@(shippingWeight is null ? "NOT ASSIGNED" : shippingWeight)</td>
+                <td>@(shippingWeight is null ? "N/A" : shippingWeight)</td>
             </tr>
         }
     </tbody>
