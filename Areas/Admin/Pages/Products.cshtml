@@ -6,13 +6,35 @@
 
 <h1>@ViewData["Title"]</h1>
 
-@if (Model.Understocked)
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Shipping Weight</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customProduct in Model.CustomProducts?.Products?.Edges ?? [])
+        {
+            var shippingWeight = customProduct?.Node?.Metafield?.Name;
+            <tr>
+                <td>@customProduct?.Node?.Id?.Split('/')[4]</td>
+                <td>@customProduct?.Node?.Title</td>
+                <td>@(shippingWeight is null ? "NOT ASSIGNED" : shippingWeight)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* @if (Model.Understocked)
 {
     <table>
         <thead>
             <tr>
-                <th>Product</th>
-                <th>Stock</th>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Shipping Weight</th>
             </tr>
         </thead>
         <tbody>
@@ -42,7 +64,7 @@ else
             }
         </tbody>
     </table>
-}
+} *@
 
 @section Scripts {
     <script>

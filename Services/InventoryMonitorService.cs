@@ -12,21 +12,62 @@ namespace StockNotificationWarning.Services
         IToastNotificationService notificationService) : IInventoryMonitorService
     {
         readonly IToastNotificationService _notificationService = notificationService;
-        
+
         readonly ILogger<InventoryMonitorService> _logger = logger;
         readonly IServiceProvider _serviceProvider = serviceProvider;
-        
+        public async Task<ProductsData> FindProductsCustomFieldsAsync()
+        {
+            var (shop, token) = GetShopAndToken();
+
+            var gql = new GraphService(shop, token);
+
+            var query = @"
+            query GetProductsWithMetafields($first: Int!, $after: String) {
+                products(first: $first, after: $after) {
+                    edges {
+                        cursor
+                        node {
+                            id
+                            title
+                            metafield(namespace: ""custom"", key: ""shipping_weight"") {
+                                id
+                                namespace
+                                key
+                                value
+                                type 
+                            }
+                        }
+                    }
+                }
+            }
+            ";
+
+            var variables = new Dictionary<string, object>
+            {
+                { "first", 10 }
+            };
+
+            var response = await gql.PostAsync<ProductsData>(
+                    new GraphRequest
+                    {
+                        Query = query,
+                        Variables = variables
+                    }
+            );
+
+            return response.Data;
+        }
 
         async Task<string?> GetProductTitleFromInvItemIdGraphQL(long invItemId)
         {
             var (shop, token) = GetShopAndToken();
 
-            if(shop is null || token is null || "N/A".Equals(shop) ||
+            if (shop is null || token is null || "N/A".Equals(shop) ||
                 "N/A".Equals(token))
             {
                 _logger.LogWarning($"Could not call upon the graph service due to shop being" +
                     $" set to {shop} and token is {token}. That combination of values is invalid.");
-                
+
                 return null;
             }
 
@@ -46,7 +87,7 @@ namespace StockNotificationWarning.Services
 
             string gid = $"gid://shopify/InventoryItem/{invItemId}";
 
-            var response = await gql.PostAsync<GQLResponse>(
+            var response = await gql.PostAsync<GQLDefaultResponse>(
             new GraphRequest
             {
                 Query = query,
@@ -59,26 +100,31 @@ namespace StockNotificationWarning.Services
             return response.Data.InventoryItem?.Variant?.Product?.Title;
         }
 
-        class GQLResponse
+        public class GQLDefaultResponse
         {
-            public InventoryItemResponse? InventoryItem { get; set; }
+            public InventoryItemDefaultResponse? InventoryItem { get; set; }
         }
 
-        class InventoryItemResponse
-        {
-            public VariantResponse? Variant { get; set; }
+        public class InventoryItemDefaultResponse
+        {   
+            public VariantDefaultResponse? Variant { get; set; }
         }
 
-        class VariantResponse
+        public class VariantDefaultResponse
         {
-            public ProductResponse? Product { get; set; }
+            public ProductDefaultResponse? Product { get; set; }
+        }
+        
+        public class ProductCustomWeightFieldResponse
+        {
+            public string? Title { get; set; }
+            public decimal? Weight { get; set; }
         }
 
-        class ProductResponse
+        public class ProductDefaultResponse
         {
             public string? Title { get; set; }
         }
-
         async Task<IEnumerable<UnderstockedProductDto>> FormDtoCollection(ListResult<InventoryLevel> levels)
         {
             var levelsCount = levels.Items.Count();
@@ -166,6 +212,8 @@ namespace StockNotificationWarning.Services
 
             return (shop, token);
         }
+
+        
 
         public async Task<IEnumerable<Product>> FindProducts()
         {
