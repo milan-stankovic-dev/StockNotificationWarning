@@ -17,7 +17,7 @@
     <tbody>
         @foreach (var customProduct in Model.CustomProducts?.Products?.Edges ?? [])
         {
-            var shippingWeight = customProduct?.Node?.Metafield?.Name;
+            var shippingWeight = customProduct?.Node?.Metafield?.Value;
             <tr>
                 <td>@customProduct?.Node?.Id?.Split('/')[4]</td>
                 <td>@customProduct?.Node?.Title</td>

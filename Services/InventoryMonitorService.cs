@@ -54,6 +54,7 @@ namespace StockNotificationWarning.Services
                         Variables = variables
                     }
             );
+            _logger.LogInformation(response.Data.ToString());
 
             return response.Data;
         }
@@ -212,8 +213,6 @@ namespace StockNotificationWarning.Services
 
             return (shop, token);
         }
-
-        
 
         public async Task<IEnumerable<Product>> FindProducts()
         {
