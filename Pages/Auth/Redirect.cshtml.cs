@@ -5,10 +5,12 @@ using StockNotificationWarning.Services.Abstraction;
 namespace StockNotificationWarning.Pages.Auth
 {
     public class RedirectModel(IShopifyRequestService shopify,
-                               IShopifyCredentialStore credentialStore) : PageModel
+                               IShopifyCredentialStore credentialStore,
+                               IMetafieldExtensionService metafieldService) : PageModel
     {
         readonly IShopifyRequestService _shopify = shopify;
         readonly IShopifyCredentialStore _credentialStore = credentialStore;
+        readonly IMetafieldExtensionService _metafieldService = metafieldService;
 
         public async Task<IActionResult> OnGetAsync(string code, string shop, string host)
         {
@@ -22,6 +24,18 @@ namespace StockNotificationWarning.Pages.Auth
             _credentialStore.Set(HttpContext, shop, token);
 
             await _shopify.RegisterScriptTagAsync(shop, token);
+
+            await _metafieldService.EnsureMetafieldExistsAsync(
+                shopDomain: shop,
+                accessToken: token,
+                namespaceVal: "custom",
+                key: "shipping_weight",
+                type: "number_decimal",
+                ownerType: "PRODUCT",
+                name: "Shipping Weight",
+                description: "Custom shipping weight example property",
+                storeFrontVisibility: true
+            );
 
             return RedirectToPage("/Greeting/HelloWorld", new { host, shop });
         }

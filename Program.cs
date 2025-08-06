@@ -17,6 +17,7 @@ builder.Services.AddSingleton<IToastNotificationService, ToastNotificationServic
 builder.Services.AddScoped<IShopifyRequestService, ShopifyRequestService>();
 builder.Services.AddScoped<IConfigDefaultsProvider, ConfigDefaultsProvider>();
 builder.Services.AddSingleton<IShopifyCredentialStore, ShopifyCredentialStore>();
+builder.Services.AddScoped<IMetafieldExtensionService, MetafieldExtensionService>();
 
 builder.Services.AddControllers();
 
