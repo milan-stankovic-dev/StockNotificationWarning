@@ -1,9 +1,7 @@
 ﻿using ShopifySharp;
-using ShopifySharp.GraphQL;
 using StockNotificationWarning.Services.Abstraction;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace StockNotificationWarning.Services
 {
