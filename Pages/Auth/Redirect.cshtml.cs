@@ -8,13 +8,13 @@ namespace StockNotificationWarning.Pages.Auth
                                IShopifyCredentialStore credentialStore,
                                IMetafieldExtensionService metafieldService,
                                IMetaobjectExtensionService metaobjectService,
-                               IShopifyScopeService scopeService) : PageModel
+                               ILogger<RedirectModel> logger) : PageModel
     {
+        readonly ILogger<RedirectModel> _logger = logger;
         readonly IShopifyRequestService _shopify = shopify;
         readonly IShopifyCredentialStore _credentialStore = credentialStore;
         readonly IMetafieldExtensionService _metafieldService = metafieldService;
         readonly IMetaobjectExtensionService _metaobjectService = metaobjectService;
-        readonly IShopifyScopeService _scopeService = scopeService;
         public async Task<IActionResult> OnGetAsync(string code, string shop, string host)
         {
             string? token = _credentialStore.Get(shop);
@@ -40,8 +40,13 @@ namespace StockNotificationWarning.Pages.Auth
                 storeFrontVisibility: true
             );
 
-            var scopes = _scopeService.GetAllScopes();
+            //var scopes = _scopeService.GetAllScopes();
+
+            // ^ nije neophodno, otkomentarisi ako treba da vidis da li su uspesno registrovani
+            // novi scope-ovi kada se radi restart aplikacije.
+
             var vendorDefintionId = await _metaobjectService.EnsureVendorExistsAsync();
+            _logger.LogInformation($"Vendor metaobject found with id: {vendorDefintionId}");
 
             return RedirectToPage("/Greeting/HelloWorld", new { host, shop });
         }
