@@ -6,12 +6,15 @@ namespace StockNotificationWarning.Pages.Auth
 {
     public class RedirectModel(IShopifyRequestService shopify,
                                IShopifyCredentialStore credentialStore,
-                               IMetafieldExtensionService metafieldService) : PageModel
+                               IMetafieldExtensionService metafieldService,
+                               IMetaobjectExtensionService metaobjectService,
+                               IShopifyScopeService scopeService) : PageModel
     {
         readonly IShopifyRequestService _shopify = shopify;
         readonly IShopifyCredentialStore _credentialStore = credentialStore;
         readonly IMetafieldExtensionService _metafieldService = metafieldService;
-
+        readonly IMetaobjectExtensionService _metaobjectService = metaobjectService;
+        readonly IShopifyScopeService _scopeService = scopeService;
         public async Task<IActionResult> OnGetAsync(string code, string shop, string host)
         {
             string? token = _credentialStore.Get(shop);
@@ -36,6 +39,9 @@ namespace StockNotificationWarning.Pages.Auth
                 description: "Custom shipping weight example property",
                 storeFrontVisibility: true
             );
+
+            var scopes = _scopeService.GetAllScopes();
+            var vendorDefintionId = await _metaobjectService.EnsureVendorExistsAsync();
 
             return RedirectToPage("/Greeting/HelloWorld", new { host, shop });
         }
