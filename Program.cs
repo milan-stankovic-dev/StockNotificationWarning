@@ -17,6 +17,12 @@ builder.Services.AddSingleton<IToastNotificationService, ToastNotificationServic
 builder.Services.AddScoped<IShopifyRequestService, ShopifyRequestService>();
 builder.Services.AddScoped<IConfigDefaultsProvider, ConfigDefaultsProvider>();
 builder.Services.AddSingleton<IShopifyCredentialStore, ShopifyCredentialStore>();
+builder.Services.AddScoped<IMetafieldExtensionService, MetafieldExtensionService>();
+builder.Services.AddScoped<IShopTokenProvider, ShopTokenProvider>();
+builder.Services.AddScoped<IMetaobjectExtensionService, MetaobjectExtensionService>();
+builder.Services.AddScoped<IShopifyScopeService, ShopifyScopeService>();
+builder.Services.AddScoped<IShopifyVendorService, ShopifyVendorService>();  
+builder.Services.AddScoped<ICustomProductService, CustomProductService>();
 
 builder.Services.AddControllers();
 

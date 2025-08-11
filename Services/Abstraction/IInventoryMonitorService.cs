@@ -8,5 +8,6 @@ namespace StockNotificationWarning.Services.Abstraction
         Task<IEnumerable<UnderstockedProductDto>> FindUnderstockedProducts();
         Task<IEnumerable<Product>> FindProducts();
         Task NotifyToastServiceOfUnderstocked();
+        Task<ProductsData> FindProductsCustomFieldsAsync();
     }
 }
