@@ -9,16 +9,15 @@ namespace StockNotificationWarning.Services
 {
     public class InventoryMonitorService(
         ILogger<InventoryMonitorService> logger,
-        IServiceProvider serviceProvider,
-        IToastNotificationService notificationService) : IInventoryMonitorService
+        IToastNotificationService notificationService,
+        IShopTokenProvider shopTokenProvider) : IInventoryMonitorService
     {
         readonly IToastNotificationService _notificationService = notificationService;
-
         readonly ILogger<InventoryMonitorService> _logger = logger;
-        readonly IServiceProvider _serviceProvider = serviceProvider;
+        readonly IShopTokenProvider _shopTokenProvider = shopTokenProvider;
         public async Task<ProductsData> FindProductsCustomFieldsAsync()
         {
-            var (shop, token) = GetShopAndToken();
+            var (shop, token) = _shopTokenProvider.Provide();
 
             var gql = new GraphService(shop, token);
 
@@ -55,7 +54,7 @@ namespace StockNotificationWarning.Services
                         Variables = variables
                     }
             );
-            //_logger.LogInformation(response.Data.ToString());
+
             _logger.LogInformation($"Successfully fetched product data! {JsonSerializer.Serialize(response.Data)}");
 
             return response.Data;
@@ -63,7 +62,7 @@ namespace StockNotificationWarning.Services
 
         async Task<string?> GetProductTitleFromInvItemIdGraphQL(long invItemId)
         {
-            var (shop, token) = GetShopAndToken();
+            var (shop, token) = _shopTokenProvider.Provide();
 
             if (shop is null || token is null || "N/A".Equals(shop) ||
                 "N/A".Equals(token))
@@ -90,7 +89,7 @@ namespace StockNotificationWarning.Services
 
             string gid = $"gid://shopify/InventoryItem/{invItemId}";
 
-            var response = await gql.PostAsync<GQLDefaultResponse>(
+            var response = await gql.PostAsync<GQLInventoryItemResponse>(
             new GraphRequest
             {
                 Query = query,
@@ -103,31 +102,12 @@ namespace StockNotificationWarning.Services
             return response.Data.InventoryItem?.Variant?.Product?.Title;
         }
 
-        public class GQLDefaultResponse
-        {
-            public InventoryItemDefaultResponse? InventoryItem { get; set; }
-        }
-
-        public class InventoryItemDefaultResponse
-        {   
-            public VariantDefaultResponse? Variant { get; set; }
-        }
-
-        public class VariantDefaultResponse
-        {
-            public ProductDefaultResponse? Product { get; set; }
-        }
-        
         public class ProductCustomWeightFieldResponse
         {
             public string? Title { get; set; }
             public decimal? Weight { get; set; }
         }
 
-        public class ProductDefaultResponse
-        {
-            public string? Title { get; set; }
-        }
         async Task<IEnumerable<UnderstockedProductDto>> FormDtoCollection(ListResult<InventoryLevel> levels)
         {
             var levelsCount = levels.Items.Count();
@@ -169,7 +149,7 @@ namespace StockNotificationWarning.Services
 
         public async Task<IEnumerable<UnderstockedProductDto>> FindUnderstockedProducts()
         {
-            var (shop, token) = GetShopAndToken();
+            var (shop, token) = _shopTokenProvider.Provide();
 
             if ( shop is null || token is null || "N/A".Equals(shop) || "N/A".Equals(token) ||
                 "".Equals(token) || "".Equals(shop))
@@ -204,21 +184,9 @@ namespace StockNotificationWarning.Services
             return await FormDtoCollection(inventoryLevels);
         }
 
-        (string shop, string token) GetShopAndToken()
-        {
-            using var scope = _serviceProvider.CreateScope();
-            var configDefaultsProvider = scope.ServiceProvider.GetRequiredService<IConfigDefaultsProvider>();
-            var credentialStore = scope.ServiceProvider.GetRequiredService<IShopifyCredentialStore>();
-
-            var shop = configDefaultsProvider.Provide();
-            var token = credentialStore.Get(shop) ?? "N/A";
-
-            return (shop, token);
-        }
-
         public async Task<IEnumerable<Product>> FindProducts()
         {
-            var (shop, token) = GetShopAndToken();
+            var (shop, token) = _shopTokenProvider.Provide();
 
             var productService = new ProductService(shop, token);
             var products = await productService.ListAsync();
