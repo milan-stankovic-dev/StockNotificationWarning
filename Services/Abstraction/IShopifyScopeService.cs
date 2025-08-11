@@ -2,6 +2,6 @@
 {
     public interface IShopifyScopeService
     {
-        Task<string> GetAllScopes();
+        Task<string[]> GetAllScopes();
     }
 }

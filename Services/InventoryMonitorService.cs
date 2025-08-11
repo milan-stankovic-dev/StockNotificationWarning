@@ -102,12 +102,6 @@ namespace StockNotificationWarning.Services
             return response.Data.InventoryItem?.Variant?.Product?.Title;
         }
 
-        public class ProductCustomWeightFieldResponse
-        {
-            public string? Title { get; set; }
-            public decimal? Weight { get; set; }
-        }
-
         async Task<IEnumerable<UnderstockedProductDto>> FormDtoCollection(ListResult<InventoryLevel> levels)
         {
             var levelsCount = levels.Items.Count();

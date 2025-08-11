@@ -118,9 +118,9 @@ namespace StockNotificationWarning.Services
                 Variables = variables!
             });
 
-            var responseDto = JsonToTIgnoreCase
+            var responseDto = JsonSerializer.Deserialize
                 <GQLGenericResponse<MetafieldDefinitionCreateResponse>>
-                (response.Json.GetRawText());
+                (response.Json.GetRawText(), jsonOptions);
 
             _logger.LogInformation($"*****IMPORTANT******. GQL RESPONSE: {JsonSerializer.Serialize(responseDto?.Data, new JsonSerializerOptions
             {
@@ -153,10 +153,6 @@ namespace StockNotificationWarning.Services
             PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
-
-        T JsonToTIgnoreCase<T>(string input) =>
-            JsonSerializer.Deserialize<T>(
-                input, jsonOptions)!;
             
         public async Task EnsureMetafieldExistsAsync(string shopDomain, string accessToken,
                                              string namespaceVal, string key,
@@ -196,9 +192,9 @@ namespace StockNotificationWarning.Services
                 Variables = variables!
             });
 
-            var resultDto = JsonToTIgnoreCase
+            var resultDto = JsonSerializer.Deserialize
                 <GQLGenericResponse<MetafieldDefinitionsResponse>>
-                (result.Json.GetRawText());
+                (result.Json.GetRawText(), jsonOptions);
 
             _logger.LogInformation($"Fetched all metafield definitions: {result.Json.GetRawText()}");
 
