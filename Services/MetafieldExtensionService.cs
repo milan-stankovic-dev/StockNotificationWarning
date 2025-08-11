@@ -1,4 +1,5 @@
 ﻿using ShopifySharp;
+using StockNotificationWarning.Dto;
 using StockNotificationWarning.Services.Abstraction;
 using System.Text;
 using System.Text.Json;
@@ -6,9 +7,11 @@ using System.Text.Json;
 namespace StockNotificationWarning.Services
 {
 
-    public class MetafieldExtensionService(ILogger<MetafieldExtensionService> logger) : IMetafieldExtensionService
+    public class MetafieldExtensionService(ILogger<MetafieldExtensionService> logger,
+                                           IShopTokenProvider shopTokenProvider) : IMetafieldExtensionService
     {
         readonly ILogger<MetafieldExtensionService> _logger = logger;
+        readonly IShopTokenProvider _shopTokenProvider = shopTokenProvider;
         public async Task AddMetafield(string? key, string? value,
             string? valueType, string? ownerResource, int? ownerId, string? shopDomain, string? accessToken)
         {
@@ -56,8 +59,6 @@ namespace StockNotificationWarning.Services
                     ]";
             }
 
-            //  ^ Ovo gore izgleda nema podrsku u Shopify-ju a mozda i ima. Valja istraziti da bi se zateglo ogranicenje za foreign key.
-
             var mutation = $@"
             mutation {{
                 metafieldDefinitionCreate(definition: {{
@@ -93,11 +94,9 @@ namespace StockNotificationWarning.Services
                 }}
             }}";
 
-
-
-            var variables = new
+            var variables = new Dictionary<string, object?>
             {
-                definition = new
+                ["definition"] = new
                 {
                     name = name,
                     @namespace = namespaceValue,
@@ -106,56 +105,59 @@ namespace StockNotificationWarning.Services
                     description = description,
                     ownerType = ownerType,
                     visibleToStorefront = storefrontVisibility
+
                 }
             };
 
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("X-Shopify-Access-Token", accessToken);
+            (string shop, string token) = _shopTokenProvider.Provide();
+            var gql = new GraphService(shop, token);
 
-            var requestBody = new
+            var response = await gql.PostAsync(new GraphRequest
             {
-                query = mutation,
-                variables = variables
-            };
+                Query = mutation,
+                Variables = variables!
+            });
 
-            var content = new StringContent(JsonSerializer.Serialize(requestBody),
-                encoding: Encoding.UTF8, "application/json");
-            var response = await httpClient.PostAsync(
-                $"https://{shopDomain}/admin/api/2024-04/graphql.json", content);
-            var responseString = await response.Content.ReadAsStringAsync();
+            var responseDto = JsonToTIgnoreCase
+                <GQLGenericResponse<MetafieldDefinitionCreateResponse>>
+                (response.Json.GetRawText());
 
-            if (!response.IsSuccessStatusCode)
+            _logger.LogInformation($"*****IMPORTANT******. GQL RESPONSE: {JsonSerializer.Serialize(responseDto?.Data, new JsonSerializerOptions
             {
-                throw new Exception("GraphQL Error: " +
-                    $"{response.StatusCode} - {responseString}");
-            }
-            ;
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            })}");
 
-            var jsonDoc = JsonDocument.Parse(responseString);
-            var root = jsonDoc.RootElement;
+            var errors = responseDto?.Data?.MetafieldDefinitionCreate?.UserErrors;
 
-            if (root.TryGetProperty("errors", out var errors))
+            string fullErrorMessage = "";
+
+            if((errors?.Count ?? -1) > 0)
             {
-                _logger.LogInformation($"==============RESPONSE: {responseString}=============");
-
-                var errorList = new List<string>();
-
-                foreach (var error in errors.EnumerateArray())
+                foreach(var error in errors!)
                 {
-                    _logger.LogError($"Shopify GraphQL error: {error}");
-                    errorList.Add(error.ToString());
-                }
-
-                if (errorList.Count != 0)
-                {
-                    throw new Exception("GraphQL error list: \n " +
-                        $"{string.Join("\n", errorList)}");
+                    fullErrorMessage += (error + "\n");
                 }
             }
 
-            _logger.LogInformation($"Metafield definition created {responseString}");
+            if(!string.IsNullOrEmpty(fullErrorMessage))
+            {
+                throw new Exception($"Error(s) occurred during creation of metafield definition: {fullErrorMessage}");
+            }
+
+            _logger.LogInformation($"Metafield definition created {response.Json.GetRawText()}");
         }
 
+        static readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
+        T JsonToTIgnoreCase<T>(string input) =>
+            JsonSerializer.Deserialize<T>(
+                input, jsonOptions)!;
+            
         public async Task EnsureMetafieldExistsAsync(string shopDomain, string accessToken,
                                              string namespaceVal, string key,
                                              string type, string ownerType,
@@ -177,57 +179,40 @@ namespace StockNotificationWarning.Services
                         }
                  }";
 
-            var variables = new
+
+            (string shop, string token) = _shopTokenProvider.Provide();
+
+            var gql = new GraphService(shop, token);
+
+            var variables = new Dictionary<string, object?>
             {
-                first = 100,
-                ownerType = ownerType
+                ["first"] = 100,
+                ["ownerType"] = ownerType!
             };
 
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("X-Shopify-Access-Token", accessToken);
-
-            var requestBody = new
+            var result = await gql.PostAsync(new GraphRequest
             {
-                query,
-                variables
-            };
+                Query = query,
+                Variables = variables!
+            });
 
-            var content = new StringContent(JsonSerializer.Serialize(requestBody),
-                Encoding.UTF8, "application/json");
+            var resultDto = JsonToTIgnoreCase
+                <GQLGenericResponse<MetafieldDefinitionsResponse>>
+                (result.Json.GetRawText());
 
-            var response = await httpClient.PostAsync(
-                $"https://{shopDomain}/admin/api/2024-04/graphql.json", content);
+            _logger.LogInformation($"Fetched all metafield definitions: {result.Json.GetRawText()}");
 
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogError($"GraphQL error: {responseString}");
-                throw new Exception($"GraphQL error while checking metafield definitions - {responseString}");
-            }
-
-            var jsonDoc = JsonDocument.Parse(responseString);
-            var root = jsonDoc.RootElement;
-
-            _logger.LogInformation(responseString);
-
-            var edges = root.GetProperty("data")
-                            .GetProperty("metafieldDefinitions")
-                            .GetProperty("edges");
-
+            var edges = resultDto?.Data?.MetafieldDefinitions?.Edges ?? [];
             _logger.LogInformation($"EDGES: {edges}");
 
-            foreach (var edge in edges.EnumerateArray())
+            foreach(var edge in edges)
             {
                 _logger.LogInformation($"EDGE: {edge}");
-                var node = edge.GetProperty("node");
-                var nodeNamespace = node.GetProperty("namespace").GetString();
-                var nodeKey = node.GetProperty("key").GetString();
 
-                if (nodeNamespace == namespaceVal && nodeKey == key)
+                if(edge?.Node?.Namespace == namespaceVal && edge?.Node.Key == key)
                 {
                     _logger.LogInformation($"Metafield definition already exists: {namespaceVal}.{key}" +
-                        $" (Name: {node.GetProperty("name").GetString()})");
+                                $" (Name: {edge?.Node?.Name ?? ""})");
                     return;
                 }
             }

@@ -1,8 +1,16 @@
-﻿namespace StockNotificationWarning.Dto
+﻿using System.Text.Json.Serialization;
+
+namespace StockNotificationWarning.Dto
 {
     public class UserError
     {
-        public string Field { get; set; } = null!;
-        public string Message { get; set; } = null!;
+        [JsonPropertyName("field")]
+        public string? Field { get; set; }
+
+        [JsonPropertyName("message")]
+        public string? Message { get; set; }
+
+        [JsonPropertyName("code")]
+        public string? Code { get; set; }
     }
 }
