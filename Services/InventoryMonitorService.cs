@@ -3,6 +3,7 @@ using ShopifySharp.Filters;
 using ShopifySharp.Lists;
 using StockNotificationWarning.Dto;
 using StockNotificationWarning.Services.Abstraction;
+using System.Text.Json;
 
 namespace StockNotificationWarning.Services
 {
@@ -54,7 +55,8 @@ namespace StockNotificationWarning.Services
                         Variables = variables
                     }
             );
-            _logger.LogInformation(response.Data.ToString());
+            //_logger.LogInformation(response.Data.ToString());
+            _logger.LogInformation($"Successfully fetched product data! {JsonSerializer.Serialize(response.Data)}");
 
             return response.Data;
         }

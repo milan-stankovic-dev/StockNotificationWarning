@@ -11,17 +11,43 @@
         <tr>
             <th>Id</th>
             <th>Title</th>
-            <th>Shipping Weight</th>
+            <th>Vendor</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var customProduct in Model.CustomProducts?.Products?.Edges ?? [])
+        @foreach (var customProduct in Model.CustomProducts ?? [])
         {
-            var shippingWeight = customProduct?.Node?.Metafield?.Value;
+            var vendor = customProduct?.Vendor;
             <tr>
-                <td>@customProduct?.Node?.Id?.Split('/')[4]</td>
-                <td>@customProduct?.Node?.Title</td>
-                <td>@(shippingWeight is null ? "N/A" : shippingWeight)</td>
+                <td>@(customProduct?.ProductId?.Split('/')[4] ?? "N/A")</td>
+                <td>@customProduct?.ProductTitle</td>
+                <td>
+                    @if (vendor is not null)
+                    {
+                        <table class="table table-bordered table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Website</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>@vendor.Name</td>
+                                    <td>@vendor.Description</td>
+                                    <td>
+                                        <a href="@vendor.WebsiteUrl" target="_blank">@vendor.WebsiteUrl</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <text>N/A</text>
+                    }
+                </td>
             </tr>
         }
     </tbody>

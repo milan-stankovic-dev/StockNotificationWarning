@@ -40,8 +40,23 @@ namespace StockNotificationWarning.Services
                                     string? type,
                                     string? ownerType,
                                     string? description = "",
-                                    bool storefrontVisibility = false)
+                                    bool storefrontVisibility = false,
+                                    string? metaobjectDefinitionId = null)
         {
+            var validationsSection = "";
+
+            if ("metaobject_reference".Equals(type) && !string.IsNullOrEmpty(metaobjectDefinitionId))
+            {
+                validationsSection = $@"
+                    validations: [
+                    {{
+                        name: ""metaobject_definition_id"",
+                        value: ""gid://shopify/MetaobjectDefinition/{metaobjectDefinitionId}""                    
+                    }}
+                    ]";
+            }
+
+            //  ^ Ovo gore izgleda nema podrsku u Shopify-ju a mozda i ima. Valja istraziti da bi se zateglo ogranicenje za foreign key.
 
             var mutation = $@"
             mutation {{
@@ -52,6 +67,7 @@ namespace StockNotificationWarning.Services
                     description: ""{EscapeGraphQLString(description)}"",
                     type: ""{EscapeGraphQLString(type)}"",
                     ownerType: {ownerType},
+                    {validationsSection},
                     access: {{
                         admin: PUBLIC_READ_WRITE,
                         storefront: PUBLIC_READ
@@ -76,6 +92,8 @@ namespace StockNotificationWarning.Services
                     }}
                 }}
             }}";
+
+
 
             var variables = new
             {
@@ -110,7 +128,8 @@ namespace StockNotificationWarning.Services
             {
                 throw new Exception("GraphQL Error: " +
                     $"{response.StatusCode} - {responseString}");
-            };
+            }
+            ;
 
             var jsonDoc = JsonDocument.Parse(responseString);
             var root = jsonDoc.RootElement;
@@ -141,7 +160,8 @@ namespace StockNotificationWarning.Services
                                              string namespaceVal, string key,
                                              string type, string ownerType,
                                              string name, string description,
-                                             bool storeFrontVisibility)
+                                             bool storeFrontVisibility,
+                                             string? metaobjectDefinitionId = null)
         {
             var query = @"
                 query metafieldDefinitions($first: Int!, $ownerType: MetafieldOwnerType!) {
@@ -215,7 +235,7 @@ namespace StockNotificationWarning.Services
             _logger.LogInformation($"Metafield definition not found, creating {namespaceVal}.{key}");
 
             await CreateMetafieldDefinitionAsync(shopDomain, accessToken, name,
-                namespaceVal, key, type, ownerType, description, storeFrontVisibility);
+                namespaceVal, key, type, ownerType, description, storeFrontVisibility, metaobjectDefinitionId);
         }
     }
 }

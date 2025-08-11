@@ -8,5 +8,6 @@
         public string? Key { get; set; }
         public decimal? Value { get; set; }
         public string? Type { get; set; }
+        public MetaobjectNode? Reference { get; set; }
     }
 }

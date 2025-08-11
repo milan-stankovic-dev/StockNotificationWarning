@@ -19,6 +19,7 @@ namespace StockNotificationWarning.Services
                 metaobjectDefinitionCreate(definition: {
                     name: ""Vendor"",
                     type: ""vendor"",
+                    displayNameKey: ""name"",
                     fieldDefinitions: [
                         { key: ""name"", name: ""Name"", type: ""single_line_text_field"" },
                         { key: ""description"", name: ""Description"", type: ""multi_line_text_field"" },

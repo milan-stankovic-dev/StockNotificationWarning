@@ -8,13 +8,15 @@ namespace StockNotificationWarning.Pages.Auth
                                IShopifyCredentialStore credentialStore,
                                IMetafieldExtensionService metafieldService,
                                IMetaobjectExtensionService metaobjectService,
-                               ILogger<RedirectModel> logger) : PageModel
+                               ILogger<RedirectModel> logger,
+                               ICustomProductService customProductService) : PageModel
     {
         readonly ILogger<RedirectModel> _logger = logger;
         readonly IShopifyRequestService _shopify = shopify;
         readonly IShopifyCredentialStore _credentialStore = credentialStore;
         readonly IMetafieldExtensionService _metafieldService = metafieldService;
         readonly IMetaobjectExtensionService _metaobjectService = metaobjectService;
+        readonly ICustomProductService _customProductService = customProductService;
         public async Task<IActionResult> OnGetAsync(string code, string shop, string host)
         {
             string? token = _credentialStore.Get(shop);
@@ -46,7 +48,29 @@ namespace StockNotificationWarning.Pages.Auth
             // novi scope-ovi kada se radi restart aplikacije.
 
             var vendorDefintionId = await _metaobjectService.EnsureVendorExistsAsync();
+
+            // Povezi product i vendor.
+
+            await _metafieldService.EnsureMetafieldExistsAsync(
+                shopDomain: shop,
+                accessToken: token,
+                namespaceVal: "custom",
+                key: "vendor_ref",
+                type: "metaobject_reference",
+                ownerType: "PRODUCT",
+                name: "Vendor Reference",
+                storeFrontVisibility: true,
+                description: "This metafield represents ManyToOne relationship product ->vendor"
+                ,
+                metaobjectDefinitionId: vendorDefintionId.ToString()
+            );
+
             _logger.LogInformation($"Vendor metaobject found with id: {vendorDefintionId}");
+
+            // Povezi product sa vendorom
+
+            await _customProductService.AssignVendorToProductAsync("gid://shopify/Product/8858179666170",
+                "gid://shopify/Metaobject/151779377402");
 
             return RedirectToPage("/Greeting/HelloWorld", new { host, shop });
         }

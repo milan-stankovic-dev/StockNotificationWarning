@@ -14,7 +14,8 @@
                                    string? type,
                                    string? ownerType,
                                    string? description = "",
-                                   bool storefrontVisibility = false);
+                                   bool storefrontVisibility = false,
+                                   string? metaobjectDefinitionId = null);
         Task EnsureMetafieldExistsAsync(string shopDomain,
                                         string accessToken, 
                                         string namespaceVal, 
@@ -23,6 +24,7 @@
                                         string ownerType, 
                                         string name, 
                                         string description, 
-                                        bool storeFrontVisibility);
+                                        bool storeFrontVisibility,
+                                        string? metaobjectDefinitionId = null);
     }
 }

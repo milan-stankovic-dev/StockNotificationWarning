@@ -44,6 +44,8 @@ namespace StockNotificationWarning.Services
 
             var responseData = response.Data;
 
+            _logger.LogInformation($"Successfully fetched vendor data! {JsonSerializer.Serialize(responseData)}");
+
             return VendorListResponseToListOfVendorDtos(responseData);
         }
         List<Vendor> VendorListResponseToListOfVendorDtos(VendorMetaobjectListResponse listResponse)

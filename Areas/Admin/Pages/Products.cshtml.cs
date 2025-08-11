@@ -6,12 +6,14 @@ using StockNotificationWarning.Services.Abstraction;
 
 namespace StockNotificationWarning.Areas.Pages
 {
-    public class ProductsModel(IInventoryMonitorService inventoryMonitor) : PageModel
+    public class ProductsModel(IInventoryMonitorService inventoryMonitor,
+                                ICustomProductService customProductService) : PageModel
     {
         readonly IInventoryMonitorService _inventoryMonitor = inventoryMonitor;
+        readonly ICustomProductService _customProductService = customProductService;
         public List<Product> Products { get; set; } = [];
         public List<UnderstockedProductDto> UnderstockedProducts { get; set; } = [];
-        public ProductsData CustomProducts { get; set; } = default!;
+        public List<ProductWithVendorDto> CustomProducts { get; set; } = default!;
 
         [BindProperty(SupportsGet = true)]
         public bool Understocked { get; set; }
@@ -28,7 +30,8 @@ namespace StockNotificationWarning.Areas.Pages
 
             // Privremeno zakomentarisan kod, testiram nesto za metafields
 
-            CustomProducts = await _inventoryMonitor.FindProductsCustomFieldsAsync();
+            //CustomProducts = await _inventoryMonitor.FindProductsCustomFieldsAsync();
+            CustomProducts = await _customProductService.GetProductsWithVendorDtoAsync();
         }
     }
 }
