@@ -1,0 +1,37 @@
+﻿@page
+@model StockNotificationWarning.Areas.Admin.Pages.VendorsModel
+
+
+<table class="table table-bordered table-striped table-sm">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Webiste URL</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var vendor in Model.Vendors ?? [])
+        {
+            <tr>
+                <td>@vendor.Id</td>
+                <td>@vendor.Name</td>
+                <td>@vendor.Description</td>
+                <td>@vendor.WebsiteUrl</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        Toastify({
+            text: "All vendors loaded",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "green",
+        }).showToast();
+    </script>
+}

@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using StockNotificationWarning.Config;
+using StockNotificationWarning.Db;
 using StockNotificationWarning.Defaults;
 using StockNotificationWarning.Services;
 using StockNotificationWarning.Services.Abstraction;
@@ -17,6 +19,13 @@ builder.Services.AddSingleton<IToastNotificationService, ToastNotificationServic
 builder.Services.AddScoped<IShopifyRequestService, ShopifyRequestService>();
 builder.Services.AddScoped<IConfigDefaultsProvider, ConfigDefaultsProvider>();
 builder.Services.AddSingleton<IShopifyCredentialStore, ShopifyCredentialStore>();
+builder.Services.AddScoped<IMetafieldExtensionService, MetafieldExtensionService>();
+builder.Services.AddScoped<IShopTokenProvider, ShopTokenProvider>();
+builder.Services.AddScoped<IMetaobjectExtensionService, MetaobjectExtensionService>();
+builder.Services.AddScoped<IShopifyScopeService, ShopifyScopeService>();
+builder.Services.AddScoped<IShopifyVendorService, ShopifyVendorService>();  
+builder.Services.AddScoped<ICustomProductService, CustomProductService>();
+builder.Services.AddScoped<IProductDetailsService, ProductDetailsService>();  
 
 builder.Services.AddControllers();
 
@@ -31,6 +40,9 @@ builder.Services.Configure<CronConfig>(
     builder.Configuration.GetSection("Cron"));
 builder.Services.Configure<ShopifyConfig>(
     builder.Configuration.GetSection("Shopify"));
+
+builder.Services.AddDbContext<ApplicationDbContext>(opts =>
+    opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors(opts =>
 {

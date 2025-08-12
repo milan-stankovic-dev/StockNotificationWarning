@@ -1,4 +1,6 @@
 ﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Text.Json
 @model StockNotificationWarning.Areas.Pages.ProductsModel
 @{
     ViewData["Title"] = Model.Understocked ? "Understocked Products" : "All Products";
@@ -6,13 +8,76 @@
 
 <h1>@ViewData["Title"]</h1>
 
-@if (Model.Understocked)
+<table class="table table-bordered table-striped table-sm">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Vendor</th>
+            <th>Product Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customProduct in Model.CustomProductWithDetails ?? [])
+        {
+            var vendor = customProduct?.Vendor;
+            <tr>
+                <td>@(customProduct?.ProductId?.Split('/')[4] ?? "N/A")</td>
+                <td>@customProduct?.ProductTitle</td>
+                <td>
+                    @if (vendor is not null)
+                    {
+                        <table class="table table-bordered table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Website</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>@vendor.Name</td>
+                                    <td>@vendor.Description</td>
+                                    <td>
+                                        <a href="@vendor.WebsiteUrl" target="_blank">@vendor.WebsiteUrl</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <text>N/A</text>
+                    }
+                </td>
+                <td>
+                    @{
+                        var details = customProduct?.Details;
+                    }
+                    @if (details is not null && details.Count != 0)
+                    {
+                        <a asp-page="/ProductDetails" asp-route-productId="@customProduct?.ProductId" 
+                        asp-route-productName ="@customProduct?.ProductTitle"
+                        asp-area="Admin"
+                           class="btn btn-outline-info">
+                            Product Details
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* @if (Model.Understocked)
 {
     <table>
         <thead>
             <tr>
-                <th>Product</th>
-                <th>Stock</th>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Shipping Weight</th>
             </tr>
         </thead>
         <tbody>
@@ -42,7 +107,7 @@ else
             }
         </tbody>
     </table>
-}
+} *@
 
 @section Scripts {
     <script>
