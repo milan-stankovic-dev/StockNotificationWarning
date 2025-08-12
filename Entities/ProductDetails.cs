@@ -12,7 +12,7 @@ namespace StockNotificationWarning.Entities
         [MaxLength(120)]
         public string CustomDisplayName { get; set; } = default!;
         public string? CustomDescription { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }
 }

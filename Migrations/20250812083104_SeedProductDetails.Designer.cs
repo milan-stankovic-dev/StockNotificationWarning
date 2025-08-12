@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StockNotificationWarning.Db;
 
@@ -11,9 +12,11 @@ using StockNotificationWarning.Db;
 namespace StockNotificationWarning.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250812083104_SeedProductDetails")]
+    partial class SeedProductDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,9 +34,7 @@ namespace StockNotificationWarning.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CustomDescription")
                         .HasColumnType("nvarchar(max)");
@@ -59,7 +60,7 @@ namespace StockNotificationWarning.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 8, 12, 8, 31, 3, 709, DateTimeKind.Utc).AddTicks(4315),
                             CustomDescription = "This is a detailed description for the newest product.",
                             CustomDisplayName = "My Newest Product",
                             ShopifyProductGid = "gid://shopify/Product/8858179666170"
@@ -67,7 +68,7 @@ namespace StockNotificationWarning.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 8, 12, 8, 31, 3, 709, DateTimeKind.Utc).AddTicks(4627),
                             CustomDescription = "Comfortable sneakers for everyday use.",
                             CustomDisplayName = "Patike",
                             ShopifyProductGid = "gid://shopify/Product/8858181271802"
@@ -75,7 +76,7 @@ namespace StockNotificationWarning.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 8, 12, 8, 31, 3, 709, DateTimeKind.Utc).AddTicks(4632),
                             CustomDescription = "Premium boots for winter season.",
                             CustomDisplayName = "Cizme Model X",
                             ShopifyProductGid = "gid://shopify/Product/8861054828794"
@@ -83,7 +84,7 @@ namespace StockNotificationWarning.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 8, 12, 8, 31, 3, 709, DateTimeKind.Utc).AddTicks(4634),
                             CustomDescription = "Keep an eye on inventory for this one!",
                             CustomDisplayName = "My New Low Stock Product",
                             ShopifyProductGid = "gid://shopify/Product/8861090283770"
@@ -91,7 +92,7 @@ namespace StockNotificationWarning.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 8, 12, 8, 31, 3, 709, DateTimeKind.Utc).AddTicks(4637),
                             CustomDescription = "A classic design with modern comfort.",
                             CustomDisplayName = "Soko",
                             ShopifyProductGid = "gid://shopify/Product/8861082714362"
