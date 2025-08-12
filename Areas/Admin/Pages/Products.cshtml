@@ -1,4 +1,6 @@
 ﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Text.Json
 @model StockNotificationWarning.Areas.Pages.ProductsModel
 @{
     ViewData["Title"] = Model.Understocked ? "Understocked Products" : "All Products";
@@ -12,10 +14,11 @@
             <th>Id</th>
             <th>Title</th>
             <th>Vendor</th>
+            <th>Product Details</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var customProduct in Model.CustomProducts ?? [])
+        @foreach (var customProduct in Model.CustomProductWithDetails ?? [])
         {
             var vendor = customProduct?.Vendor;
             <tr>
@@ -46,6 +49,20 @@
                     else
                     {
                         <text>N/A</text>
+                    }
+                </td>
+                <td>
+                    @{
+                        var details = customProduct?.Details;
+                    }
+                    @if (details is not null && details.Count != 0)
+                    {
+                        <a asp-page="/ProductDetails" asp-route-productId="@customProduct?.ProductId" 
+                        asp-route-productName ="@customProduct?.ProductTitle"
+                        asp-area="Admin"
+                           class="btn btn-outline-info">
+                            Product Details
+                        </a>
                     }
                 </td>
             </tr>

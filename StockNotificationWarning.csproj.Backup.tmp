@@ -10,8 +10,8 @@
 		<PackageReference Include="DotNetEnv" Version="3.1.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
 		<PackageReference Include="ShopifySharp" Version="6.24.1" />
