@@ -1,4 +1,4 @@
-﻿@using Microsoft.Extensions.Options
+﻿@* @using Microsoft.Extensions.Options
 @using StockNotificationWarning.Config
 @using System.Text.Json
 @using StockNotificationWarning.Services.Abstraction
@@ -25,6 +25,94 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html> *@
+
+
+@using Microsoft.Extensions.Options
+@using StockNotificationWarning.Config
+@using System.Text.Json
+@using StockNotificationWarning.Services.Abstraction
+@inject IOptionsMonitor<ShopifyConfig> CredentialStore
+@inject IShopifyCredentialStore ShopifyContext
+@inject IToastNotificationService ToastService
+@inject IInventoryMonitorService MonitorService
+
+@{
+    var apiKey = CredentialStore.CurrentValue.ApiKey;
+    await MonitorService.NotifyToastServiceOfUnderstocked();
+    var inventoryWarnings = ToastService.GetAllToasts();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="~/js/toasts.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<body data-api-key="@apiKey">
+    @RenderBody()
+
+    <script type="module">
+        import { initApp } from '/js/app-bridge-bundle.js';
+        import { getSessionToken } from '/js/app-bridge-bundle.js';
+
+        (async () => {
+            const apiKey = document.body.dataset.apiKey;
+            const urlParams = new URLSearchParams(window.location.search);
+            const host = urlParams.get('host');
+
+            if (!host) {
+                console.error("🚨 Missing 'host' query parameter — Shopify App Bridge will break");
+                return;
+            }
+
+            const app = await initApp(apiKey, host);
+            window.app = app;
+
+            async function fetchUnderstocked() {
+                console.log("Understocked product CRON job ran!");
+
+                try {
+                    const sessionToken = await getSessionToken(app);
+                    const response = await fetch('/api/toastwarning', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + sessionToken,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const warnings = await response.json();
+                        warnings.forEach(warning => {
+                            console.log("📦 Inventory warning:", warning);
+                            Toast.failure(warning);
+                        });
+                    } else {
+                        console.error("❌ Fetch failed:", response.status);
+                    }
+                } catch (err) {
+                    console.error("🔥 Error fetching understocked:", err);
+                }
+            }
+
+            await fetchUnderstocked();
+
+            setInterval(fetchUnderstocked, 30000);
+        })();
+    </script>
 
     @RenderSection("Scripts", required: false)
 </body>
