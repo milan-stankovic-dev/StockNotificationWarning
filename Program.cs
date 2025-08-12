@@ -25,6 +25,7 @@ builder.Services.AddScoped<IMetaobjectExtensionService, MetaobjectExtensionServi
 builder.Services.AddScoped<IShopifyScopeService, ShopifyScopeService>();
 builder.Services.AddScoped<IShopifyVendorService, ShopifyVendorService>();  
 builder.Services.AddScoped<ICustomProductService, CustomProductService>();
+builder.Services.AddScoped<IProductDetailsService, ProductDetailsService>();  
 
 builder.Services.AddControllers();
 
