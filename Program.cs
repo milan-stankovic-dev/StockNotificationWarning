@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using StockNotificationWarning.Config;
+using StockNotificationWarning.Db;
 using StockNotificationWarning.Defaults;
 using StockNotificationWarning.Services;
 using StockNotificationWarning.Services.Abstraction;
@@ -37,6 +39,9 @@ builder.Services.Configure<CronConfig>(
     builder.Configuration.GetSection("Cron"));
 builder.Services.Configure<ShopifyConfig>(
     builder.Configuration.GetSection("Shopify"));
+
+builder.Services.AddDbContext<ApplicationDbContext>(opts =>
+    opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors(opts =>
 {
