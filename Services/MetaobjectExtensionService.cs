@@ -118,9 +118,6 @@ namespace StockNotificationWarning.Services
             var createdVendor = response.Data.MetaobjectCreate.Metaobject;
             _logger.LogInformation($"Created vendor metaobject with ID: {createdVendor.Id}");
         }
-
-
-
         public async Task<long> EnsureVendorExistsAsync()
         {
             (string shop, string token) = _shopTokenProvider.Provide();

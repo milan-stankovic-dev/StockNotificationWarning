@@ -30,7 +30,6 @@ namespace StockNotificationWarning.Areas.Pages
 
             // Privremeno zakomentarisan kod, testiram nesto za metafields
 
-            //CustomProducts = await _inventoryMonitor.FindProductsCustomFieldsAsync();
             CustomProducts = await _customProductService.GetProductsWithVendorDtoAsync();
         }
     }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using StockNotificationWarning.Services.Abstraction;
+using System.Text.Json;
 
 namespace StockNotificationWarning.Pages.Auth
 {
@@ -9,7 +10,8 @@ namespace StockNotificationWarning.Pages.Auth
                                IMetafieldExtensionService metafieldService,
                                IMetaobjectExtensionService metaobjectService,
                                ILogger<RedirectModel> logger,
-                               ICustomProductService customProductService) : PageModel
+                               ICustomProductService customProductService,
+                               IShopifyScopeService scopeService) : PageModel
     {
         readonly ILogger<RedirectModel> _logger = logger;
         readonly IShopifyRequestService _shopify = shopify;
@@ -17,6 +19,7 @@ namespace StockNotificationWarning.Pages.Auth
         readonly IMetafieldExtensionService _metafieldService = metafieldService;
         readonly IMetaobjectExtensionService _metaobjectService = metaobjectService;
         readonly ICustomProductService _customProductService = customProductService;
+        readonly IShopifyScopeService _scopeService = scopeService;
         public async Task<IActionResult> OnGetAsync(string code, string shop, string host)
         {
             string? token = _credentialStore.Get(shop);
@@ -29,6 +32,9 @@ namespace StockNotificationWarning.Pages.Auth
             _credentialStore.Set(HttpContext, shop, token);
 
             await _shopify.RegisterScriptTagAsync(shop, token);
+
+            var scopes = await _scopeService.GetAllScopes();
+            _logger.LogInformation($"Found scopes: {JsonSerializer.Serialize(scopes)}");
 
             await _metafieldService.EnsureMetafieldExistsAsync(
                 shopDomain: shop,
