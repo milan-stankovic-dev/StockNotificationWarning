@@ -1,4 +1,5 @@
 ﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using System.Text.Json
 @model StockNotificationWarning.Areas.Pages.ProductsModel
 @{
@@ -54,13 +55,14 @@
                     @{
                         var details = customProduct?.Details;
                     }
-                    @if(details is not null && details.Count != 0) {
-                        <ul>
-                            @foreach(var detail in details)
-                            {
-                                <li>@(JsonSerializer.Serialize(detail))</li>
-                            }
-                        </ul>
+                    @if (details is not null && details.Count != 0)
+                    {
+                        <a asp-page="/ProductDetails" asp-route-productId="@customProduct?.ProductId" 
+                        asp-route-productName ="@customProduct?.ProductTitle"
+                        asp-area="Admin"
+                           class="btn btn-outline-info">
+                            Product Details
+                        </a>
                     }
                 </td>
             </tr>
