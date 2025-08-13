@@ -78,7 +78,8 @@ namespace StockNotificationWarning.Pages.Auth
             await _customProductService.AssignVendorToProductAsync("gid://shopify/Product/8858179666170",
                 "gid://shopify/Metaobject/151779377402");
 
-            return RedirectToPage("/Greeting/HelloWorld", new { host, shop });
+            //return RedirectToPage("/Greeting/HelloWorld", new { host, shop });
+            return RedirectToPage("/Products", new {area = "Admin", host, shop});
         }
     }
 }
