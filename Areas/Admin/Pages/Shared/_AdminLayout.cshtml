@@ -67,11 +67,28 @@
     <script type="module">
         import { initApp } from '/js/app-bridge-bundle.js';
         import { getSessionToken } from '/js/app-bridge-bundle.js';
+        import { createApp } from '/js/app-bridge-bundle.js';
+        import { Redirect } from '/js/app-bridge-bundle.js';
+
+        // ovaj deo sluzi da radi early redirect u shopify iFrame ako 
+        // nije embeddovano. To sluzi da bi se sprecio 'flash' stranice izvan iFramea
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const host = urlParams.get('host');
+        const apiKey = document.body.dataset.apiKey;
+
+        if(host && window.self === window.top) {
+            const app = await createApp(apiKey, host);
+                Redirect.create(app).dispatch(
+                    Redirect.Action.APP,
+                    window.location.href
+                );
+        }
+
+        // Klasican workflow, prikazuje se toast preko cron-job-a u embedd-ovanom 
+        // iFrame-u od Shopify-ja.
 
         (async () => {
-            const apiKey = document.body.dataset.apiKey;
-            const urlParams = new URLSearchParams(window.location.search);
-            const host = urlParams.get('host');
 
             if (!host) {
                 console.error("🚨 Missing 'host' query parameter — Shopify App Bridge will break");
