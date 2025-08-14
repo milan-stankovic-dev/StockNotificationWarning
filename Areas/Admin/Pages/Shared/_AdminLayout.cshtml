@@ -63,8 +63,7 @@
     @RenderBody()
 
     <script type="module">
-        import { initApp } from '/js/app-bridge-bundle.js';
-        import { getSessionToken } from '/js/app-bridge-bundle.js';
+        import { initApp, getSessionToken } from '/js/app-bridge-bundle.js';
 
         (async () => {
             const apiKey = document.body.dataset.apiKey;
@@ -78,6 +77,12 @@
 
             const app = await initApp(apiKey, host);
             window.app = app;
+
+            if (window.top === window.self) { 
+                const correctUrl = `https://admin.shopify.com/store/${shop.replace('.myshopify.com', '')}/apps/stock-notification-warning/Admin/Products?host=${encodeURIComponent(host)}&shop=${encodeURIComponent(shop)}`;
+                window.location.replace(correctUrl); 
+                return;
+            }
 
             async function fetchUnderstocked() {
                 console.log("Understocked product CRON job ran!");
