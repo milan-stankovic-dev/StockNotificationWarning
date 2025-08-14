@@ -71,10 +71,10 @@
             const apiKey = document.body.dataset.apiKey;
             const params = new URLSearchParams(window.location.search);
             const host = params.get('host');
-            const shop = params.get('shop');
 
-            if (!host || !shop) {
+            if (!host) {
                 console.error("🚨 Missing host/shop parameter — app cannot initialize");
+                document.getElementById('app-content').style.display = 'block';
                 return;
             }
 
